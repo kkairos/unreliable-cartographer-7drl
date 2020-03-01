@@ -49,7 +49,7 @@ def menu(target_console,menu_console):
 								(target_console.fg[x_store][y_store][0],target_console.fg[x_store][y_store][1],target_console.fg[x_store][y_store][2]),
 								(target_console.bg[x_store][y_store][0],target_console.bg[x_store][y_store][1],target_console.bg[x_store][y_store][2])
 								])
-						tcod.console_set_custom_font(cx.FONT_FILE[cx.SETTINGS[1]["sel"]],tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_ASCII_INROW,32,8)
+						tcod.console_set_custom_font(cx.FONT_FILE[cx.SETTINGS[1]["sel"]],tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_ASCII_INROW,32,16)
 						target_console = tcod.console_init_root(target_console.width, target_console.height, "D@N ROGUE", False, 3, "F", True)
 						for y_store in range(0,target_console.height):
 							for x_store in range(0,target_console.width):

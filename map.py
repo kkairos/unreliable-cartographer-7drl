@@ -4,15 +4,16 @@ import copy
 
 class Tile:
 
-	def __init__(self,block_m,block_s=None,char=0,fg=15,bg=0):
+	def __init__(self,block_m,block_s,char,fg,bg,type):
 		self.block_m = block_m
 		if block_s is None:
 			block_s = block_m
 		self.block_s = block_s
 		self.char = char
 		self.fg = constants.COLORS[fg]
-		self.bg =  constants.COLORS[bg]
+		self.bg = constants.COLORS[bg]
 		self.explored = False
+		self.type = type
 
 def newtile(terrain):
 	return Tile(
@@ -20,7 +21,8 @@ def newtile(terrain):
 		terrain["block_s"],
 		terrain["char"],
 		terrain["fg"],
-		terrain["bg"]
+		terrain["bg"],
+		terrain["type"]
 		)
 
 class Map:
@@ -31,18 +33,56 @@ class Map:
 		self.t_ = self.t_init()
 		
 	def t_init(self):
-		tiles = [[newtile(constants.TERRAIN["ground"]) for y in range(self.height)] for x in range(self.width)]
+		tiles = [[newtile(constants.TERRAIN["wall"]) for y in range(self.height)] for x in range(self.width)]
+
+		map_debug = 0
 		
 		for y in range(self.height):
 			for x in range(self.width):
-				tiles[x][y] = newtile(constants.TERRAIN["ground"])
+				tiles[x][y] = newtile(constants.TERRAIN["floor"])
 
 		for y in range(self.height):
 			for x in range(self.width):
+				if y==1 or x==1 or (y==self.height-2) or (x==self.width-2):
+					tiles[x][y] = newtile(constants.TERRAIN["wall"])
 				if y==0 or x==0 or (y==self.height-1) or (x==self.width-1):
-					tiles[x][y] = newtile(constants.TERRAIN["fence"])
+					tiles[x][y] = newtile(constants.TERRAIN["nav"])
+
+		if map_debug == 1:
+			for y in range(self.height):
+				for x in range(self.width):
+					tiles[x][y].explored = True
 		return tiles
 
+	def walls_and_pits(self):
+		for y in range(self.height):
+			for x in range(self.width):
+				if self.t_[x][y].type == "wall":
+					z_tmp = 0
+					z_tmp += self.char_update_val(x,y-1,1,"wall")
+					z_tmp += self.char_update_val(x,y+1,2,"wall")
+					z_tmp += self.char_update_val(x+1,y,4,"wall")
+					z_tmp += self.char_update_val(x-1,y,8,"wall")
+					self.t_[x][y].char = constants.walldraw[z_tmp]
+				if self.t_[x][y].type == "pit":
+					z_tmp = 0
+					z_tmp += self.char_update_val(x,y-1,1,"pit")
+					z_tmp += self.char_update_val(x-1,y,2,"pit")
+					self.t_[x][y].char = constants.pitdraw[z_tmp]
+
+	def char_update_val(self,x,y,v,type):
+		if ((x < 0) or (x > (self.width -1))):
+			return 0
+		elif ((y < 0) or (y > (self.height -1))):
+			return 0
+		else:
+			if ((type == "pit") and (self.t_[x][y].type != type) and (self.t_[x][y].explored == True)):
+				return v
+			elif ((type != "pit") and (self.t_[x][y].type == type) and (self.t_[x][y].explored == True)):
+				return v
+			else:
+				return 0
+			
 	def line_from(self,x0,x1,y0,y1,line_type):
 		if x0 == x1:
 			self.line_v(y0,y1,x0,line_type)
@@ -82,7 +122,53 @@ def make_map(map):
 	y0,y1 = 7, 7
 	w0,w1 = 5, 7
 	h0,h1 = 5, 7
-	rand_s_x, rand_s_y, rand_s_w, rand_s_h = rand_square(x0,x1,y0,y1,w0,w1,h0,h1)
-	map.draw_house(rand_s_x, rand_s_y, rand_s_w, rand_s_h)
+	#rand_s_x, rand_s_y, rand_s_w, rand_s_h = rand_square(x0,x1,y0,y1,w0,w1,h0,h1)
+	#map.draw_house(rand_s_x, rand_s_y, rand_s_w, rand_s_h)
 	
+	xw = 4
+	rw = 6
+	xh = 4
+	rh = 6
+	for y in range(rh+2,map.height-rh,xh+rh):
+		for x in range(rw+2,map.width-rw,xw+rw):
+			map.draw_square(x,y,xw-1,xh-1,"wall","wall")
+			zrand = randint(0,3)
+			zh = 6
+			zw = 6
+			map.draw_square(x-rw,y,rw-1,xh-1,"wall","wall")
+			map.draw_square(x+xw,y,rw-1,xh-1,"wall","wall")
+			map.draw_square(x,y-rh,xw-1,rh-1,"wall","wall")
+			map.draw_square(x,y+xh,xw-1,rh-1,"wall","wall")
+			if zrand != 0: #right
+				print('y')
+				zzrand = randint(x+xw+1,x+xw+rw-3)
+				map.line_from(zzrand,zzrand,y,y+xh,"floor")
+			if zrand != 1: #left
+				print('y')
+				zzrand = randint(x-rw+1,x-2)
+				map.line_from(zzrand,zzrand,y,y+xh,"floor")
+			if zrand != 2: #up
+				print('y')
+				zzrand = randint(y-rh+1,y-2)
+				map.line_from(x,x+xw,zzrand,zzrand,"floor")
+			if zrand != 3: #down
+				print('y')
+				zzrand = randint(y+xh+1,y+xh+rh-3)
+				map.line_from(x,x+xw,zzrand,zzrand,"floor")
+
+	for y in range(2,map.height-rh,xh+rh):
+		for x in range(2,map.width-rw,xw+rw):
+			zzrand = randint(0,5)
+			if zzrand == 1:
+				map.t_[x][y] = newtile(constants.TERRAIN["wall"])
+				map.t_[x+5][y] = newtile(constants.TERRAIN["wall"])
+				map.t_[x][y+5] = newtile(constants.TERRAIN["wall"])
+				map.t_[x+5][y+5] = newtile(constants.TERRAIN["wall"])
+			if zzrand == 0 or 4:
+				map.draw_square(x+1,y+1,3,3,"pit","pit")
+			if zzrand % 3 == 1:
+				map.t_[x+2][y+2] = newtile(constants.TERRAIN["wall"])
+				map.t_[x+3][y+2] = newtile(constants.TERRAIN["wall"])
+				map.t_[x+2][y+3] = newtile(constants.TERRAIN["wall"])
+				map.t_[x+3][y+3] = newtile(constants.TERRAIN["wall"])
 	return

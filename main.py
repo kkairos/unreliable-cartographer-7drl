@@ -9,31 +9,30 @@ import menu
 def main():
 	
 	screen_width = 80
-	screen_height =25
+	screen_height = 45
 	map_w = 60
-	map_h = 21
+	map_h = 40
 	
 	level_map = map.Map(map_w,map_h)
 	
 	map.make_map(level_map)
 	
-	player = ec.Entity(int(level_map.width/2),int(level_map.height/2),ord("@"),15,0,10,10,cx.Faction.Ally,cx.DrawOrder.PLAYER,True,"You")
+	player = ec.Entity(2,2,cx.CHARS["person"],15,0,10,10,cx.Faction.Ally,cx.DrawOrder.PLAYER,True,"You")
 	
-	npc = ec.Entity(int(level_map.width*3/4),int(level_map.height*1/4),ord("@"),14,0,10,10,cx.Faction.Ally,cx.DrawOrder.NPC,True,"")
+	#npc = ec.Entity(int(level_map.width*3/4),int(level_map.height*1/4),cx.CHARS["person"],14,0,10,10,cx.Faction.Ally,cx.DrawOrder.NPC,True,"")
 
-	ene = ec.Entity(int(level_map.width*4/5),int(level_map.height*3/5),ord("@"),10,0,10,10,cx.Faction.Enemy,cx.DrawOrder.NPC,True,"Mortimer")
+	#ene = ec.Entity(int(level_map.width*4/5),int(level_map.height*3/5),cx.CHARS["person"],10,0,10,10,cx.Faction.Enemy,cx.DrawOrder.NPC,True,"Mortimer")
 	
-	entities = [player,npc,ene]
-	
-	for entity in entities:
-		print(entity.block_m)
+	entities = [player,
+	#npc,ene
+	]
 	
 	key = tcod.Key()
 	mouse = tcod.Mouse()
 	
 	tcod.console_set_custom_font(cx.FONT_FILE[cx.SETTINGS[1]["sel"]],
-		tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_ASCII_INROW,
-		32,8
+		tcod.FONT_TYPE_GRAYSCALE | tcod.FONT_LAYOUT_ASCII_INROW,
+		32,16
 		)
 	main_console = tcod.console_init_root(screen_width, screen_height, "D@N ROGUE", False, 3, "F", True)
 	
@@ -45,7 +44,7 @@ def main():
 	status_console = tcod.console.Console(main_console.width-map_console.width,main_console.height)
 	
 	messages = []
-	for x in range(0,4):
+	for x in range(0,message_console.height):
 		messages.append("")
 	
 	menu.menu_print(menu_console)

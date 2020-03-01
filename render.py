@@ -34,23 +34,26 @@ def clear_e(map_console,x):
 	map_console.put_char(x.x, x.y, ord(" "), tcod.BKGND_DEFAULT)
 
 def draw_map(map,map_console,fov):
+	map.walls_and_pits()
 	for y in range(map_console.height):
 		for x in range(map_console.width):
 			if fov[x][y] == True:
 				tcod.console_set_default_foreground(map_console,map.t_[x][y].fg)
 				tcod.console_set_default_background(map_console,map.t_[x][y].bg)
 				map_console.put_char(x, y, map.t_[x][y].char, tcod.BKGND_DEFAULT)
+				map_console.bg[x,y] = map.t_[x][y].bg
+				map_console.fg[x,y] = map.t_[x][y].fg
 			elif (fov[x][y] == False) and map.t_[x][y].explored == True:
-				tcod.console_set_default_foreground(map_console,constants.COLORS[8])
-				tcod.console_set_default_background(map_console,constants.COLORS[8])
 				map_console.put_char(x, y, map.t_[x][y].char, tcod.BKGND_DEFAULT)
-
+				map_console.bg[x,y] = (map.t_[x][y].bg[0]*.4,map.t_[x][y].bg[1]*.4,map.t_[x][y].bg[2]*.4)
+				map_console.fg[x,y] = (map.t_[x][y].fg[0]*.4,map.t_[x][y].fg[1]*.4,map.t_[x][y].fg[2]*.4)
+				
 def draw_con(main_console,map_console,xpos,ypos):
 	map_console.blit(
 		main_console,
 		xpos,ypos, #dest
 		0,0, #src
-		80,25, #w&h
+		map_console.width,map_console.height, #w&h
 		1.0,1.0, #fg,bg alpha
 		None
 		)

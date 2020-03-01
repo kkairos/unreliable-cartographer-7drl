@@ -25,7 +25,9 @@ COLORS = {
 	3 : (0,168,168),
 	2 : (0,168,0),
 	1 : (0,0,168),
-	0 : (0,0,0)
+	0 : (0,0,0),
+	"darkgrey" : (42,42,42),
+	-1 : (2,2,2)
 	}
 	
 LINES = {
@@ -86,19 +88,26 @@ DESC = {
 	"B J N               "
 	],
 	"FONT_SEL" : [
-	"Classic 437      ",
-	#"Electrum-Thin 437",
-	"Narrow 437       ",
-	"Bubble 437       "
+	"8x16 Thin           "
 	],
 	"NO_SEL" : []
 }
 
+walldraw = []
+for x in range(0,16):
+	walldraw.append(x+256)
+	
+pitdraw = []
+for x in range(0,4):
+	pitdraw.append(x+384)
+
+CHARS  ={
+	"person" : 272
+	}
+
 FONT_FILE = [
-	"font-8x14-classic.png",
-	#"font-8x14-thin.png",
-	"font-8x14-narrow.png",
-	"font-8x14-bubble.png"
+	"font-16x16.png"
+	#"font-8x16-tiles.png",
 	]
 
 TERRAIN = {
@@ -107,47 +116,31 @@ TERRAIN = {
 		"block_s" : True,
 		"char" : 178,
 		"fg" : 7,
-		"bg" : 0,
-		"name" : "wall"
+		"bg" : "darkgrey",
+		"type" : "wall"
 		},
 	"floor" : {
 		"block_m" : False,
 		"block_s" : False,
-		"char" : 249,
-		"fg" : 7,
-		"bg" : 0,
-		"name" : "floor"
-		},
-	"fence" : {
-		"block_m" : True,
-		"block_s" : False,
-		"char" : ord("#"),
-		"fg" : 6,
-		"bg" : 0,
-		"name" : "floor"
-		},
-	"ground" : {
-		"block_m" : False,
-		"block_s" : False,
-		"char" : ord(","),
-		"fg" : 2,
-		"bg" : 0,
-		"name" : "floor"
-		},
-	"water" : {
-		"block_m" : True,
-		"block_s" : False,
-		"char" : ord("~"),
-		"fg" : 1,
-		"bg" : 0,
-		"name" : "floor"
+		"char" : 273,
+		"fg" : 0,
+		"bg" : "darkgrey",
+		"type" : "floor"
 		},
 	"pit" : {
 		"block_m" : True,
 		"block_s" : False,
-		"char" : ord(":"),
-		"fg" : 8,
+		"char" : 352,
+		"fg" : "darkgrey",
 		"bg" : 0,
-		"name" : "floor"
-		}
+		"type" : "pit"
+		},
+	"nav" : {
+		"block_m" : False,
+		"block_s" : False,
+		"char" : ord(" "),
+		"fg" : 0,
+		"bg" : 0,
+		"type" : "nav"
+		},
 	}
