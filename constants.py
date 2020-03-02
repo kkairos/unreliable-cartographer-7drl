@@ -9,6 +9,13 @@ class DrawOrder(Enum):
 	NPC = 1
 	PLAYER = 2
 
+
+COLOR_BOOST = {
+	"warm" : [1.75, 1.30,1.00],	# multipliers for warm colors in r,g,b format
+	"cool" : [1.10,0.90,2],	# multipliers for cool colors in r,g,b format
+	"cool_darken" : 0.35		# multiplier to darken cool colors
+	}
+
 COLORS = {
 	15 : (255,255,255),
 	14 : (255,255,84),
@@ -19,6 +26,8 @@ COLORS = {
 	9 : (84,84,255),
 	8 : (84,84,84),
 	7 : (168,168,168),
+	"wallgrey" : (180,150,150),
+	"tilegrey" : (50,50,50),
 	6 : (168,84,0),
 	5 : (168,0,168),
 	4 : (168,0,0),
@@ -98,7 +107,7 @@ for x in range(0,16):
 	walldraw.append(x+256)
 	
 pitdraw = []
-for x in range(0,4):
+for x in range(0,5):
 	pitdraw.append(x+384)
 
 CHARS  ={
@@ -107,7 +116,6 @@ CHARS  ={
 
 FONT_FILE = [
 	"font-16x16.png"
-	#"font-8x16-tiles.png",
 	]
 
 TERRAIN = {
@@ -115,17 +123,19 @@ TERRAIN = {
 		"block_m" : True,
 		"block_s" : True,
 		"char" : 178,
-		"fg" : 7,
-		"bg" : "darkgrey",
-		"type" : "wall"
+		"fg" : "wallgrey",
+		"bg" : "tilegrey",
+		"type" : "wall",
+		"falloff-exp" : float(1.0)
 		},
 	"floor" : {
 		"block_m" : False,
 		"block_s" : False,
 		"char" : 273,
-		"fg" : 0,
-		"bg" : "darkgrey",
-		"type" : "floor"
+		"fg" : "darkgrey",
+		"bg" : "tilegrey",
+		"type" : "floor",
+		"falloff-exp" : float(1.5)
 		},
 	"pit" : {
 		"block_m" : True,
@@ -133,7 +143,8 @@ TERRAIN = {
 		"char" : 352,
 		"fg" : "darkgrey",
 		"bg" : 0,
-		"type" : "pit"
+		"type" : "pit",
+		"falloff-exp" : float(1.25)
 		},
 	"nav" : {
 		"block_m" : False,
@@ -141,6 +152,7 @@ TERRAIN = {
 		"char" : ord(" "),
 		"fg" : 0,
 		"bg" : 0,
-		"type" : "nav"
+		"type" : "nav",
+		"falloff-exp" : float(1.0)
 		},
 	}

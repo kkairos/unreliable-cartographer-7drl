@@ -37,17 +37,60 @@ def draw_map(map,map_console,fov):
 	map.walls_and_pits()
 	for y in range(map_console.height):
 		for x in range(map_console.width):
-			if fov[x][y] == True:
-				tcod.console_set_default_foreground(map_console,map.t_[x][y].fg)
-				tcod.console_set_default_background(map_console,map.t_[x][y].bg)
+
+			#get warm and cool versions of colors
+			
+			warm_fg, cool_fg = color_mods(map.t_[x][y].fg)
+			warm_bg, cool_bg = color_mods(map.t_[x][y].bg)
+			
+			if fov[x][y] > 0:
 				map_console.put_char(x, y, map.t_[x][y].char, tcod.BKGND_DEFAULT)
-				map_console.bg[x,y] = map.t_[x][y].bg
-				map_console.fg[x,y] = map.t_[x][y].fg
-			elif (fov[x][y] == False) and map.t_[x][y].explored == True:
-				map_console.put_char(x, y, map.t_[x][y].char, tcod.BKGND_DEFAULT)
-				map_console.bg[x,y] = (map.t_[x][y].bg[0]*.4,map.t_[x][y].bg[1]*.4,map.t_[x][y].bg[2]*.4)
-				map_console.fg[x,y] = (map.t_[x][y].fg[0]*.4,map.t_[x][y].fg[1]*.4,map.t_[x][y].fg[2]*.4)
+				map_console.fg[x,y] = color_diff(warm_fg,cool_fg,fov[x][y])
+				map_console.bg[x,y] = color_diff(warm_bg,cool_bg,fov[x][y])	
+			elif fov[x][y] == 0 and map.t_[x][y].explored == True:
+				warm_fg, cool_fg = color_mods(map.t_[x][y].fg)
+				warm_bg, cool_bg = color_mods(map.t_[x][y].bg)
+				map_console.fg[x,y] = cool_fg
+				map_console.bg[x,y] = cool_bg
 				
+def color_diff(warmtriplet, cooltriplet, warm_mod):
+	wr,wg,wb = warmtriplet
+	cr,cg,cb = cooltriplet
+	
+	dr = int((cr-wr)*(1-warm_mod))
+	dg = int((cg-wg)*(1-warm_mod))
+	db = int((cb-wb)*(1-warm_mod))
+	
+	return wr+dr,wg+dg,wb+db
+			
+def color_mods(colortriplet):
+	r,g,b = colortriplet
+	r2,g2,b2 = colortriplet
+	
+	warm = []
+	cool = []
+	
+	for x in range(0,3):
+		warm.append(constants.COLOR_BOOST["warm"][x])
+		cool.append(constants.COLOR_BOOST["cool"][x])
+	
+	cool_darken = constants.COLOR_BOOST["cool_darken"]
+	
+	#warm
+	r = min(255,int(r*warm[0]))
+	g = min(255,int(g*warm[1]))
+	b = min(255,int(b*warm[2]))
+	
+	#cool
+	r2 = min(255,int(r*cool[0]))
+	g2 = min(255,int(g*cool[1]))
+	b2 = min(255,int(b*cool[2]))
+	r2 = int(r2*cool_darken)
+	g2 = int(g2*cool_darken)
+	b2 = int(b2*cool_darken)
+	
+	return (r,g,b),(r2,g2,b2)
+	
 def draw_con(main_console,map_console,xpos,ypos):
 	map_console.blit(
 		main_console,

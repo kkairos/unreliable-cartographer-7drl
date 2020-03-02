@@ -1,6 +1,6 @@
 import tcod, tcod.event
-from controls import key_input
 import render as re
+from controls import key_input
 import constants as cx
 
 def menu_print(menu_console):

@@ -4,7 +4,7 @@ import copy
 
 class Tile:
 
-	def __init__(self,block_m,block_s,char,fg,bg,type):
+	def __init__(self,block_m,block_s,char,fg,bg,type,falloff_exp):
 		self.block_m = block_m
 		if block_s is None:
 			block_s = block_m
@@ -14,6 +14,7 @@ class Tile:
 		self.bg = constants.COLORS[bg]
 		self.explored = False
 		self.type = type
+		self.falloff_exp = falloff_exp
 
 def newtile(terrain):
 	return Tile(
@@ -22,7 +23,8 @@ def newtile(terrain):
 		terrain["char"],
 		terrain["fg"],
 		terrain["bg"],
-		terrain["type"]
+		terrain["type"],
+		terrain["falloff-exp"]
 		)
 
 class Map:
@@ -68,6 +70,8 @@ class Map:
 					z_tmp = 0
 					z_tmp += self.char_update_val(x,y-1,1,"pit")
 					z_tmp += self.char_update_val(x-1,y,2,"pit")
+					if z_tmp == 0:
+						z_tmp += self.char_update_val(x-1,y-1,4,"pit")
 					self.t_[x][y].char = constants.pitdraw[z_tmp]
 
 	def char_update_val(self,x,y,v,type):
@@ -140,35 +144,54 @@ def make_map(map):
 			map.draw_square(x,y-rh,xw-1,rh-1,"wall","wall")
 			map.draw_square(x,y+xh,xw-1,rh-1,"wall","wall")
 			if zrand != 0: #right
-				print('y')
 				zzrand = randint(x+xw+1,x+xw+rw-3)
 				map.line_from(zzrand,zzrand,y,y+xh,"floor")
 			if zrand != 1: #left
-				print('y')
 				zzrand = randint(x-rw+1,x-2)
 				map.line_from(zzrand,zzrand,y,y+xh,"floor")
 			if zrand != 2: #up
-				print('y')
 				zzrand = randint(y-rh+1,y-2)
 				map.line_from(x,x+xw,zzrand,zzrand,"floor")
 			if zrand != 3: #down
-				print('y')
 				zzrand = randint(y+xh+1,y+xh+rh-3)
 				map.line_from(x,x+xw,zzrand,zzrand,"floor")
 
 	for y in range(2,map.height-rh,xh+rh):
 		for x in range(2,map.width-rw,xw+rw):
-			zzrand = randint(0,5)
-			if zzrand == 1:
+			zzrand = randint(0,8)
+			if (zzrand % 3) == 1:
 				map.t_[x][y] = newtile(constants.TERRAIN["wall"])
 				map.t_[x+5][y] = newtile(constants.TERRAIN["wall"])
 				map.t_[x][y+5] = newtile(constants.TERRAIN["wall"])
 				map.t_[x+5][y+5] = newtile(constants.TERRAIN["wall"])
-			if zzrand == 0 or 4:
+			if zzrand == 1:
+				map.draw_square(x+1,y+1,3,3,"pit","wall")
+			if zzrand == 2:
+				map.draw_square(x+1,y+1,3,3,"pit","wall")
+			if zzrand == 3:
+				map.draw_square(x+2,y+2,1,1,"wall","wall")
+			if zzrand == 4:
 				map.draw_square(x+1,y+1,3,3,"pit","pit")
-			if zzrand % 3 == 1:
-				map.t_[x+2][y+2] = newtile(constants.TERRAIN["wall"])
-				map.t_[x+3][y+2] = newtile(constants.TERRAIN["wall"])
-				map.t_[x+2][y+3] = newtile(constants.TERRAIN["wall"])
-				map.t_[x+3][y+3] = newtile(constants.TERRAIN["wall"])
+			if zzrand == 5:
+				map.draw_square(x+1,y+1,3,3,"wall","floor")
+			if zzrand == 6:
+				for c in range(0,8):
+					zrand2 = randint(1,4)
+					zrand3= randint(1,4)
+					map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["pit"])
+			if zzrand == 7:
+				for c in range(0,8):
+					zrand2 = randint(1,4)
+					zrand3= randint(1,4)
+					map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["wall"])
+			if zzrand == 8:
+				for c in range(0,8):
+					zrand2 = randint(1,4)
+					zrand3 = randint(1,4)
+					zrand4 = randint(0,1)
+					if zrand4 == 0:
+						map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["wall"])
+					else:
+						map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["pit"])
+
 	return

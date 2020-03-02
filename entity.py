@@ -24,8 +24,8 @@ class Entity:
 		self.faction = faction
 		self.dispname = dispname
 		self.draw_order = draw_order
-		self.sightrange = 8
-		
+		self.sightrange = 10
+
 	def move(self,dx,dy,map,entities,message_console,messages):
 		if (self.x+dx > -1 and self.x+dx < map.width and self.y+dy > -1 and self.y+dy < map.height):
 			
@@ -62,7 +62,8 @@ class Entity:
 	
 	def fov(self,map,entities):
 	
-		fov = [[False for y in range(map.height)] for x in range(map.width)]
+		#fov = [[False for y in range(map.height)] for x in range(map.width)]
+		fov = [[float(0.0) for y in range(map.height)] for x in range(map.width)]
 		eblock = [[False for y in range(map.height)] for x in range(map.width)]
 		
 		for y in range(map.height):
@@ -82,7 +83,7 @@ class Entity:
 			yd_i = float(self.y+0.5)
 			xd_d = float(math.cos(theta))
 			yd_d = float(math.sin(theta))
-			fov[self.x][self.y] = True
+			fov[self.x][self.y] = 1
 			map.t_[self.x][self.y].explored = True
 			
 			for r in range(radius):
@@ -91,7 +92,13 @@ class Entity:
 				if (int(xd_i) < 0) or (int(yd_i) < 0) or (int(xd_i) > map.width-1) or (int(yd_i) > map.height-1):
 					break
 #				try:
-				fov[int(xd_i)][int(yd_i)] = True
+				if r == 0 or ((int(xd_i) == self.x) and (int(yd_i) == self.y)):
+					fov[int(xd_i)][int(yd_i)] = float(1.0)
+				else:
+					falloff_mod = map.t_[int(xd_i)][int(yd_i)].falloff_exp
+					fov[int(xd_i)][int(yd_i)] = float(2/((r+2)**falloff_mod))
+#					fov[int(xd_i)][int(yd_i)] = float(1/((r*0.8)**falloff_mod))
+#					fov[int(xd_i)][int(yd_i)] = float((radius-r)/(radius**falloff_mod))
 				map.t_[int(xd_i)][int(yd_i)].explored = True
 				if (map.t_[int(xd_i)][int(yd_i)].block_s == True) or (eblock[int(xd_i)][int(yd_i)] == True):
 					break
