@@ -11,9 +11,9 @@ class DrawOrder(Enum):
 
 
 COLOR_BOOST = {
-	"warm" : [1.75, 1.30,1.00],	# multipliers for warm colors in r,g,b format
-	"cool" : [1.10,0.90,2],	# multipliers for cool colors in r,g,b format
-	"cool_darken" : 0.35		# multiplier to darken cool colors
+	"warm" : [1.85, 1.35,1.00],	# multipliers for warm colors in r,g,b format
+	"cool" : [0.90,0.80,2],	# multipliers for cool colors in r,g,b format
+	"cool_darken" : 0.25		# multiplier to darken cool colors
 	}
 
 COLORS = {
@@ -26,7 +26,7 @@ COLORS = {
 	9 : (84,84,255),
 	8 : (84,84,84),
 	7 : (168,168,168),
-	"wallgrey" : (180,150,150),
+	"wallgrey" : (180,140,120),
 	"tilegrey" : (50,50,50),
 	6 : (168,84,0),
 	5 : (168,0,168),
