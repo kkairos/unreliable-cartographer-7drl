@@ -11,8 +11,11 @@ class DrawOrder(Enum):
 
 
 COLOR_BOOST = {
-	"warm" : [1.85, 1.35,1.00],	# multipliers for warm colors in r,g,b format
-	"cool" : [0.90,0.80,2],	# multipliers for cool colors in r,g,b format
+	#"warm" : [1.85, 1.35,1.00],	# multipliers for warm colors in r,g,b format
+	#"cool" : [0.90,0.80,2],	# multipliers for cool colors in r,g,b format
+	#"cool_darken" : 0.25		# multiplier to darken cool colors
+    "warm" : [1.85, 1.35,1.00],	# multipliers for warm colors in r,g,b format
+	"cool" : [0.60,0.70,1.8],	# multipliers for cool colors in r,g,b format
 	"cool_darken" : 0.25		# multiplier to darken cool colors
 	}
 
@@ -126,7 +129,7 @@ TERRAIN = {
 		"fg" : "wallgrey",
 		"bg" : "tilegrey",
 		"type" : "wall",
-		"falloff-exp" : float(1.0)
+		"falloff-exp" : float(2.0)
 		},
 	"floor" : {
 		"block_m" : False,
@@ -135,7 +138,7 @@ TERRAIN = {
 		"fg" : "darkgrey",
 		"bg" : "tilegrey",
 		"type" : "floor",
-		"falloff-exp" : float(1.5)
+		"falloff-exp" : float(2.0)
 		},
 	"pit" : {
 		"block_m" : True,
