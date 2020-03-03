@@ -59,15 +59,7 @@ LINES = {
 	"bottom-left" : 200,
 	"top-bottom" : 205
 	}
-	
-pitdraw = []
-for x in range(0,5):
-	pitdraw.append(x+384)
 
 CHARS  ={
 	"person" : 272
 	}
-
-FONT_FILE = [
-	"font-16x16.png"
-	]
