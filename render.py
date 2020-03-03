@@ -1,6 +1,7 @@
 import tcod
 import tcod.event as tcv
 import constants
+import drawval
 
 # Movement
 def draw_all(map,map_console,entities,fov):
@@ -17,7 +18,7 @@ def clear_all(map_console,entities):
 		clear_e(map_console,x)
 
 def draw_s(menu_console,menu_selection):
-	tcod.console_set_default_foreground(menu_console, constants.COLORS[14])
+	tcod.console_set_default_foreground(menu_console, drawval.COLORS[14])
 	menu_console.put_char(2, constants.SETTINGS[menu_selection]["yval"], 16, tcod.BKGND_DEFAULT)
 
 def clear_s(menu_console,menu_selection):
@@ -25,16 +26,16 @@ def clear_s(menu_console,menu_selection):
 
 def draw_e(map_console,x,out_of_sight=False):
 	if out_of_sight:
-		tcod.console_set_default_foreground(map_console,constants.COLORS[8])
+		tcod.console_set_default_foreground(map_console, drawval.COLORS[8])
 	else:
-		tcod.console_set_default_foreground(map_console,constants.COLORS[x.fg])
+		tcod.console_set_default_foreground(map_console, drawval.COLORS[x.fg])
 	map_console.put_char(x.x, x.y, x.char, x.bg)
 	
 def clear_e(map_console,x):
 	map_console.put_char(x.x, x.y, ord(" "), tcod.BKGND_DEFAULT)
 
 def draw_map(map,map_console,fov):
-	map.walls_and_pits()
+	#map.walls_and_pits()
 	for y in range(map_console.height):
 		for x in range(map_console.width):
 
@@ -71,10 +72,10 @@ def color_mods(colortriplet):
 	cool = []
 	
 	for x in range(0,3):
-		warm.append(constants.COLOR_BOOST["warm"][x])
-		cool.append(constants.COLOR_BOOST["cool"][x])
+		warm.append(drawval.COLOR_BOOST["warm"][x])
+		cool.append(drawval.COLOR_BOOST["cool"][x])
 	
-	cool_darken = constants.COLOR_BOOST["cool_darken"]
+	cool_darken = drawval.COLOR_BOOST["cool_darken"]
 	
 	#warm
 	r = min(255,int(r*warm[0]))
@@ -103,23 +104,23 @@ def draw_con(main_console,map_console,xpos,ypos):
 		
 def console_borders(z,x0,y0,x1,y1):
 	for x in range(x0+1,x1):
-		z.put_char(x, y0, constants.LINES["top-bottom"], tcod.BKGND_DEFAULT)
-		z.put_char(x, y1, constants.LINES["top-bottom"], tcod.BKGND_DEFAULT)
+		z.put_char(x, y0, drawval.LINES["top-bottom"], tcod.BKGND_DEFAULT)
+		z.put_char(x, y1, drawval.LINES["top-bottom"], tcod.BKGND_DEFAULT)
 	for y in range(y0+1,y1):
-		z.put_char(x0, y, constants.LINES["left-right"], tcod.BKGND_DEFAULT)
-		z.put_char(x1, y, constants.LINES["left-right"], tcod.BKGND_DEFAULT)
-	z.put_char(x0, y0, constants.LINES["top-left"], tcod.BKGND_DEFAULT)
-	z.put_char(x1, y0, constants.LINES["top-right"], tcod.BKGND_DEFAULT)
-	z.put_char(x0, y1, constants.LINES["bottom-left"], tcod.BKGND_DEFAULT)
-	z.put_char(x1, y1, constants.LINES["bottom-right"], tcod.BKGND_DEFAULT)
+		z.put_char(x0, y, drawval.LINES["left-right"], tcod.BKGND_DEFAULT)
+		z.put_char(x1, y, drawval.LINES["left-right"], tcod.BKGND_DEFAULT)
+	z.put_char(x0, y0, drawval.LINES["top-left"], tcod.BKGND_DEFAULT)
+	z.put_char(x1, y0, drawval.LINES["top-right"], tcod.BKGND_DEFAULT)
+	z.put_char(x0, y1, drawval.LINES["bottom-left"], tcod.BKGND_DEFAULT)
+	z.put_char(x1, y1, drawval.LINES["bottom-right"], tcod.BKGND_DEFAULT)
 	return
 
 def messageprint(z,s,m):
-	z.clear(32,constants.COLORS[15],constants.COLORS[0])
+	z.clear(32,drawval.COLORS[15],drawval.COLORS[0])
 	m.append(s)
 	for x in range(0,z.height):
 		if m[len(m)-1-x] != "":
-			z.print(0,z.height-1-x,"> " + m[len(m)-1-x],constants.COLORS[15],constants.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+			z.print(0,z.height-1-x,"> " + m[len(m)-1-x],drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
 	print(s)
 
 #message construction for basic actions

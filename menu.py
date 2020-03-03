@@ -2,16 +2,17 @@ import tcod, tcod.event
 import render as re
 from controls import key_input
 import constants as cx
+import drawval
 
 def menu_print(menu_console):
 
-	menu_console.print(menu_console.width//2,1,"M A I N  M E N U",cx.COLORS[15],cx.COLORS[0],tcod.BKGND_DEFAULT,tcod.CENTER)
+	menu_console.print(menu_console.width//2,1,"M A I N  M E N U",drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.CENTER)
 	
 	for x in cx.SETTINGS:
-		menu_console.print(4,x.get("yval"),x.get("name"),cx.COLORS[15],cx.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+		menu_console.print(4,x.get("yval"),x.get("name"),drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
 		if x.get("desc") != "NO_SEL":			
 			y = cx.DESC[x.get("desc")]
-			menu_console.print(4,x.get("yval")+1,y[x.get("sel")],cx.COLORS[7],cx.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+			menu_console.print(4,x.get("yval")+1,y[x.get("sel")],drawval.COLORS[7],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
 	return
 
 def menu(target_console,menu_console):

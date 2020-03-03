@@ -1,6 +1,7 @@
 import constants
 from random import randint
 import copy
+import drawval
 
 class Tile:
 
@@ -10,8 +11,8 @@ class Tile:
 			block_s = block_m
 		self.block_s = block_s
 		self.char = char
-		self.fg = constants.COLORS[fg]
-		self.bg = constants.COLORS[bg]
+		self.fg = drawval.COLORS[fg]
+		self.bg = drawval.COLORS[bg]
 		self.explored = False
 		self.type = type
 		self.falloff_exp = falloff_exp
@@ -48,7 +49,7 @@ class Map:
 				if y==1 or x==1 or (y==self.height-2) or (x==self.width-2):
 					tiles[x][y] = newtile(constants.TERRAIN["wall"])
 				if y==0 or x==0 or (y==self.height-1) or (x==self.width-1):
-					tiles[x][y] = newtile(constants.TERRAIN["nav"])
+					tiles[x][y] = newtile(constants.TERRAIN["solidwall"])
 
 		if map_debug == 1:
 			for y in range(self.height):
@@ -56,7 +57,22 @@ class Map:
 					tiles[x][y].explored = True
 		return tiles
 
+	def walls_around(self,x,y):
+		for z in range(0,9):
+			x2 = (x-1)+(z%3)
+			y2 = (y-1)+(z//3)
+			if x2 > -1 and x2 < self.width and y2 > -1 and y2 < self.height:
+				if self.t_[x2][y2].type != "wall" and self.t_[x2][y2].type != "solidwall":
+					return
+		self.t_[x][y] = newtile(constants.TERRAIN["solidwall"])
+		
 	def walls_and_pits(self):
+	
+		for y in range(self.height):
+			for x in range(self.width):
+				if self.t_[x][y].type == "wall":
+					self.walls_around(x,y)
+	
 		for y in range(self.height):
 			for x in range(self.width):
 				if self.t_[x][y].type == "wall":
@@ -80,13 +96,13 @@ class Map:
 		elif ((y < 0) or (y > (self.height -1))):
 			return 0
 		else:
-			if ((type == "pit") and (self.t_[x][y].type != type) and (self.t_[x][y].explored == True)):
+			if ((type == "pit") and (self.t_[x][y].type != type)):
 				return v
-			elif ((type != "pit") and (self.t_[x][y].type == type) and (self.t_[x][y].explored == True)):
+			elif ((type != "pit") and (self.t_[x][y].type == type)):
 				return v
 			else:
 				return 0
-			
+
 	def line_from(self,x0,x1,y0,y1,line_type):
 		if x0 == x1:
 			self.line_v(y0,y1,x0,line_type)
@@ -112,7 +128,7 @@ class Map:
 
 	def draw_house(self,hx,hy,hw,hh):
 		
-		self.draw_square(hx,hy,hw,hh,"wall","floor")
+		self.draw_square(hx,hy,hw,hh,"wall","wall")
 
 def rand_square(x0,x1,y0,y1,w0,w1,h0,h1):
 
@@ -169,7 +185,7 @@ def make_map(map):
 			if zzrand == 2:
 				map.draw_square(x+1,y+1,3,3,"pit","wall")
 			if zzrand == 3:
-				map.draw_square(x+2,y+2,1,1,"wall","wall")
+				map.draw_square(x+2,y+2,1,1,"wall","solidwall")
 			if zzrand == 4:
 				map.draw_square(x+1,y+1,3,3,"pit","pit")
 			if zzrand == 5:
@@ -193,5 +209,7 @@ def make_map(map):
 						map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["wall"])
 					else:
 						map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["pit"])
+
+	map.walls_and_pits()
 
 	return

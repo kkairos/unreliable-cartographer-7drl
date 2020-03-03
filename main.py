@@ -3,6 +3,7 @@ from controls import key_input
 import entity as ec
 import render as re
 import constants as cx
+import drawval
 import map
 import menu
 
@@ -17,7 +18,7 @@ def main():
 	
 	map.make_map(level_map)
 	
-	player = ec.Entity(3,2,cx.CHARS["person"],15,0,10,10,cx.Faction.Ally,cx.DrawOrder.PLAYER,True,"You")
+	player = ec.Entity(3,2,drawval.CHARS["person"],15,0,10,10,cx.Faction.Ally,cx.DrawOrder.PLAYER,True,"You")
 	
 	#npc = ec.Entity(int(level_map.width*3/4),int(level_map.height*1/4),cx.CHARS["person"],14,0,10,10,cx.Faction.Ally,cx.DrawOrder.NPC,True,"")
 

@@ -77,6 +77,14 @@ class Entity:
 			if (en.block_s == True) and (e != self):
 				eblock[en.x][en.y] = True
 
+		for theta in range(len(cx.THETAS)):
+			
+			xd_i = float(self.x+0.5)
+			yd_i = float(self.y+0.5)
+			xd_d,yd_d = cx.THETAS[theta]
+			fov[self.x][self.y] = 1
+			map.t_[self.x][self.y].explored = True
+			"""
 		for theta in range(720):
 			theta = math.radians(float(theta/2))
 			xd_i = float(self.x+0.5)
@@ -85,13 +93,12 @@ class Entity:
 			yd_d = float(math.sin(theta))
 			fov[self.x][self.y] = 1
 			map.t_[self.x][self.y].explored = True
-			
+			"""
 			for r in range(radius):
 				xd_i+=xd_d
 				yd_i+=yd_d
 				if (int(xd_i) < 0) or (int(yd_i) < 0) or (int(xd_i) > map.width-1) or (int(yd_i) > map.height-1):
 					break
-#				try:
 				if r == 0 or ((int(xd_i) == self.x) and (int(yd_i) == self.y)):
 					fov[int(xd_i)][int(yd_i)] = float(1.0)
 				else:
@@ -103,9 +110,6 @@ class Entity:
 				map.t_[int(xd_i)][int(yd_i)].explored = True
 				if (map.t_[int(xd_i)][int(yd_i)].block_s == True) or (eblock[int(xd_i)][int(yd_i)] == True):
 					break
-#				except IndexError:
-#					break
-		
 		return fov
 	
 def blocking_entity(entities,x,y):
