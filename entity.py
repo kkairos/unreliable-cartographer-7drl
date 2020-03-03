@@ -96,7 +96,8 @@ class Entity:
 					fov[int(xd_i)][int(yd_i)] = float(1.0)
 				else:
 					falloff_mod = map.t_[int(xd_i)][int(yd_i)].falloff_exp
-					fov[int(xd_i)][int(yd_i)] = float(2/((r+2)**falloff_mod))
+					fov[int(xd_i)][int(yd_i)] = float(-1.4*math.atan((r-2)/2)/math.pi+0.6)
+#					fov[int(xd_i)][int(yd_i)] = float(2/((r+2)**falloff_mod))
 #					fov[int(xd_i)][int(yd_i)] = float(1/((r*0.8)**falloff_mod))
 #					fov[int(xd_i)][int(yd_i)] = float((radius-r)/(radius**falloff_mod))
 				map.t_[int(xd_i)][int(yd_i)].explored = True
