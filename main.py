@@ -7,6 +7,44 @@ import drawval
 import map
 import menu
 
+def new_level(map_w,map_h):
+	level_map = map.Map(map_w,map_h)
+	map.make_map(level_map)
+	paper_map = map.Map(map_w,map_h)
+	#paper_map.t_ = level_map.t_.copy
+	for y in range(map_h):
+		for x in range(map_w):
+			z = level_map.t_[x][y].type
+			paper_map.t_[x][y] = map.newtile(cx.TERRAIN[z])
+			paper_map.t_[x][y].fg = drawval.COLORS["map-black"]
+			paper_map.t_[x][y].bg = drawval.COLORS["map-white"]
+			
+		#	print(str(level_map.t_[x][y].char)+" " + str(paper_map.t_[x][y].char))
+	
+	paper_map.walls_and_pits()
+			
+	for y in range(map_h):
+		for x in range(map_w):
+			if paper_map.t_[x][y].type == "wall":
+				paper_map.t_[x][y].char += 64
+			if paper_map.t_[x][y].type == "pit":
+				paper_map.t_[x][y].fg = drawval.COLORS["map-black"]
+				paper_map.t_[x][y].bg = drawval.COLORS["map-white"]
+				paper_map.t_[x][y].char += 64
+			if paper_map.t_[x][y].type == "floor":
+				paper_map.t_[x][y].char = 32
+			if paper_map.t_[x][y].type == "solidwall":
+				paper_map.t_[x][y].char = 32
+				paper_map.t_[x][y].fg = drawval.COLORS["map-white"]
+				paper_map.t_[x][y].bg = drawval.COLORS["map-white"]
+	
+	paper_map.t_[paper_map.width-2][0].char = 338
+	paper_map.t_[paper_map.width-2][0].fg = drawval.COLORS["map-red"]
+	paper_map.t_[paper_map.width-1][0].char = 339
+	paper_map.t_[paper_map.width-1][0].fg = drawval.COLORS["map-red"]
+	
+	return level_map, paper_map
+
 def main():
 	
 	screen_width = 80
@@ -14,12 +52,10 @@ def main():
 	map_w = 60
 	map_h = 40
 	
-	level_map = map.Map(map_w,map_h)
-	
-	map.make_map(level_map)
+	level_map, paper_map = new_level(map_w,map_h)
 	
 	player = ec.Entity(3,2,drawval.CHARS["person"],15,0,10,10,cx.Faction.Ally,cx.DrawOrder.PLAYER,True,"You")
-	
+
 	#npc = ec.Entity(int(level_map.width*3/4),int(level_map.height*1/4),cx.CHARS["person"],14,0,10,10,cx.Faction.Ally,cx.DrawOrder.NPC,True,"")
 
 	#ene = ec.Entity(int(level_map.width*4/5),int(level_map.height*3/5),cx.CHARS["person"],10,0,10,10,cx.Faction.Enemy,cx.DrawOrder.NPC,True,"Mortimer")
@@ -54,11 +90,17 @@ def main():
 	
 	fg_sh = 15
 	bg_sh = 0
+
+	fov = player.fov(level_map,entities)
+	
+	re.draw_paper_map(paper_map, map_console)
+	
+	#re.console_borders(map_console,0,0,map_console.width-1,map_console.height-1)
 	
 	while True:
 	
 		fov = player.fov(level_map,entities)
-		re.draw_map(level_map, map_console, fov)
+		re.draw_map(level_map, paper_map, map_console, fov)
 		re.draw_all(level_map,map_console,entities,fov)
 		re.draw_con(main_console,map_console,status_console.width,0)
 		re.draw_con(main_console,message_console,status_console.width,main_console.height-message_console.height)

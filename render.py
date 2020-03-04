@@ -34,8 +34,17 @@ def draw_e(map_console,x,out_of_sight=False):
 def clear_e(map_console,x):
 	map_console.put_char(x.x, x.y, ord(" "), tcod.BKGND_DEFAULT)
 
-def draw_map(map,map_console,fov):
-	#map.walls_and_pits()
+def draw_paper_map(paper_map,map_console):
+	
+	for y in range(map_console.height):
+		for x in range(map_console.width):
+			
+			map_console.put_char(x, y, paper_map.t_[x][y].char, tcod.BKGND_DEFAULT)
+			map_console.fg[x,y] = paper_map.t_[x][y].fg
+			map_console.bg[x,y] = paper_map.t_[x][y].bg			
+				
+def draw_map(map,paper_map,map_console,fov):
+	
 	for y in range(map_console.height):
 		for x in range(map_console.width):
 
@@ -43,6 +52,7 @@ def draw_map(map,map_console,fov):
 			
 			warm_fg, cool_fg = color_mods(map.t_[x][y].fg)
 			warm_bg, cool_bg = color_mods(map.t_[x][y].bg)
+			
 			
 			if fov[x][y] > 0:
 				map_console.put_char(x, y, map.t_[x][y].char, tcod.BKGND_DEFAULT)
@@ -53,7 +63,37 @@ def draw_map(map,map_console,fov):
 				warm_bg, cool_bg = color_mods(map.t_[x][y].bg)
 				map_console.fg[x,y] = cool_fg
 				map_console.bg[x,y] = cool_bg
-				
+			elif paper_map.t_[x][y].explored == False:
+				if explored_around(map,x,y):
+					if paper_map.t_[x][y].type == "wall" or paper_map.t_[x][y].type == "floor":
+						tmp_fg = paper_map.t_[x][y].fg
+						tmp_bg = color_darken(paper_map.t_[x][y].bg)
+					else:
+						tmp_fg = paper_map.t_[x][y].fg
+						tmp_bg = color_darken(paper_map.t_[x][y].bg)
+					
+					map_console.fg[x,y] = tmp_fg
+					map_console.bg[x,y] = tmp_bg
+					paper_map.t_[x][y].explored = True
+
+# this may need to be cleaned up later
+
+def color_darken(colortriplet):
+	r,g,b = colortriplet
+	r = int(r*0.85)
+	g = int(g*0.85)
+	b = int(b*0.85)
+	return (r,g,b)
+
+def explored_around(map,x,y):
+		for z in range(0,9):
+			x2 = (x-1)+(z%3)
+			y2 = (y-1)+(z//3)
+			if x2 > -1 and x2 < map.width and y2 > -1 and y2 < map.height:
+				if map.t_[x2][y2].explored == True:
+					return True
+		return False
+
 def color_diff(warmtriplet, cooltriplet, warm_mod):
 	wr,wg,wb = warmtriplet
 	cr,cg,cb = cooltriplet

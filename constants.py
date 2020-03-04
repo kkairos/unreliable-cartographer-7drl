@@ -110,9 +110,9 @@ TERRAIN = {
 	"solidwall": {
 		"block_m" : True,
 		"block_s" : True,
-		"char" : 178,
-		"fg" : "wall-fg",
-		"bg" : "wall-bg",
+		"char" : 210,
+		"fg" : "black",
+		"bg" : "black",
 		"type" : "solidwall",
 		"falloff-exp" : float(2.0)
 		},

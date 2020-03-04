@@ -211,5 +211,5 @@ def make_map(map):
 						map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["pit"])
 
 	map.walls_and_pits()
-
+	
 	return

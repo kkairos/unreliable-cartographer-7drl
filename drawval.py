@@ -12,13 +12,25 @@ class DrawOrder(Enum):
 
 COLOR_BOOST = {
 	#"warm" : [1.85, 1.35,1.00],	# multipliers for warm colors in r,g,b format
-	#"cool" : [0.90,0.80,2],	# multipliers for cool colors in r,g,b format
-	#"cool_darken" : 0.25		# multiplier to darken cool colors
-    "warm" : [1.85, 1.35,1.00],	# multipliers for warm colors in r,g,b format
-	"cool" : [0.60,0.70,1.8],	# multipliers for cool colors in r,g,b format
-	"cool_darken" : 0.25		# multiplier to darken cool colors
+	#"cool" : [0.90,0.80,2],		# multipliers for cool colors in r,g,b format
+	#"cool_darken" : 0.25			# multiplier to darken cool colors
+    "warm" : [1.85, 1.35,1.00],		# multipliers for warm colors in r,g,b format
+	"cool" : [0.60,0.70,1.8],		# multipliers for cool colors in r,g,b format
+	"cool_darken" : 0.25			# multiplier to darken cool colors
 	}
 
+"""
+	format: [terrain]-[color]: 
+
+	* fg controls the color that the "white" in the PNG files will display
+	* bg controls the color that the "black" in the PNG files will display
+
+	* "map-white "and "map-black" are, appropriately, the background and foreground of map tiles by default
+	* "map-red" is what the mapmaker uses to emphasize traps
+	* "black" is what it says on the tin
+
+	* others are mainly reference at this point but shouldn't necessarily be tweaked yet
+"""
 COLORS = {
 	"wall-fg" : (180,140,120),
 	"wall-bg" : (50,50,50),
@@ -26,6 +38,9 @@ COLORS = {
 	"floor-bg" : (50,50,50),
 	"pit-fg" : (42,42,42),
 	"pit-bg" : (0,0,0),
+	"map-white" : (180,172,162),
+	"map-black" : (65,65,65),
+	"map-red" : (128,45,45),
 	"black" : (0,0,0),
 	15 : (255,255,255),
 	14 : (255,255,84),
@@ -36,7 +51,6 @@ COLORS = {
 	9 : (84,84,255),
 	8 : (84,84,84),
 	7 : (168,168,168),
-
 	"tilegrey" : (50,50,50),
 	6 : (168,84,0),
 	5 : (168,0,168),
@@ -61,5 +75,7 @@ LINES = {
 	}
 
 CHARS  ={
-	"person" : 272
+	"person" : 272,
+	"trap0" : 338,
+	"trap1" : 339
 	}
