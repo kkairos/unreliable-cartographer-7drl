@@ -84,10 +84,9 @@ class Map:
 					self.t_[x][y].char = constants.walldraw[z_tmp]
 				if self.t_[x][y].type == "pit":
 					z_tmp = 0
-					z_tmp += self.char_update_val(x,y-1,1,"pit")
-					z_tmp += self.char_update_val(x-1,y,2,"pit")
-					if z_tmp == 0:
-						z_tmp += self.char_update_val(x-1,y-1,4,"pit")
+					z_tmp += self.char_update_val(x-1,y-1,1,"pit")
+					z_tmp += self.char_update_val(x,y-1,2,"pit")
+					z_tmp += self.char_update_val(x-1,y,4,"pit")
 					self.t_[x][y].char = constants.pitdraw[z_tmp]
 
 	def char_update_val(self,x,y,v,type):
