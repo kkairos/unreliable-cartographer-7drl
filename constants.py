@@ -76,7 +76,9 @@ DESC = {
 	"B J N               "
 	],
 	"FONT_SEL" : [
-	"8x16 Thin           "
+	"16x16 Stable         ",
+	"16x16 Working Set    ",
+	"16x16 \"Alpha\"        ",
 	],
 	"NO_SEL" : []
 }
@@ -87,10 +89,12 @@ for x in range(0,16):
 	
 pitdraw = []
 for x in range(0,5):
-	pitdraw.append(x+384)
+	pitdraw.append(x+288)
 
 FONT_FILE = [
-	"font-16x16.png"
+	"uc-tiles-16x16-stable.png",
+	"uc-tiles-16x16-working.png",
+	"uc-tiles-16x16-alpha.png",
 	]
 
 TERRAIN = {

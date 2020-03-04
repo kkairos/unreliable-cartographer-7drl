@@ -84,16 +84,7 @@ class Entity:
 			xd_d,yd_d = cx.THETAS[theta]
 			fov[self.x][self.y] = 1
 			map.t_[self.x][self.y].explored = True
-			"""
-		for theta in range(720):
-			theta = math.radians(float(theta/2))
-			xd_i = float(self.x+0.5)
-			yd_i = float(self.y+0.5)
-			xd_d = float(math.cos(theta))
-			yd_d = float(math.sin(theta))
-			fov[self.x][self.y] = 1
-			map.t_[self.x][self.y].explored = True
-			"""
+
 			for r in range(radius):
 				xd_i+=xd_d
 				yd_i+=yd_d
@@ -104,9 +95,6 @@ class Entity:
 				else:
 					falloff_mod = map.t_[int(xd_i)][int(yd_i)].falloff_exp
 					fov[int(xd_i)][int(yd_i)] = float(-1.4*math.atan((r-2)/2)/math.pi+0.6)
-#					fov[int(xd_i)][int(yd_i)] = float(2/((r+2)**falloff_mod))
-#					fov[int(xd_i)][int(yd_i)] = float(1/((r*0.8)**falloff_mod))
-#					fov[int(xd_i)][int(yd_i)] = float((radius-r)/(radius**falloff_mod))
 				map.t_[int(xd_i)][int(yd_i)].explored = True
 				if (map.t_[int(xd_i)][int(yd_i)].block_s == True) or (eblock[int(xd_i)][int(yd_i)] == True):
 					break
