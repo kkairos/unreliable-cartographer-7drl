@@ -2,6 +2,7 @@ import constants
 from random import randint
 import copy
 import drawval
+import entity as ec
 
 class Tile:
 
@@ -138,7 +139,7 @@ def rand_square(x0,x1,y0,y1,w0,w1,h0,h1):
 	
 	return rand_s_x, rand_s_y, rand_s_w, rand_s_h
 	
-def make_map(map):
+def make_map(map,entities):
 	x0,x1 = 5, 5
 	y0,y1 = 7, 7
 	w0,w1 = 5, 7
@@ -214,16 +215,25 @@ def make_map(map):
 				if randint(0,4) > 1:
 					for zdoub in ((x+1,y),(x,y+1),(x+1,y+5),(x,y+4), (x+5,y+1),(x+4,y),(x+4,y+5),(x+5,y+4)):
 						map.t_[zdoub[0]][zdoub[1]] = newtile(constants.TERRAIN["wall"])
-	"""
-					map.t_[x+1][y] = newtile(constants.TERRAIN["wall"])
-					map.t_[x][y+1] = newtile(constants.TERRAIN["wall"])
-					map.t_[x+1][y+5] = newtile(constants.TERRAIN["wall"])
-					map.t_[x][y+4] = newtile(constants.TERRAIN["wall"])
-					map.t_[x+5][y+1] = newtile(constants.TERRAIN["wall"])
-					map.t_[x+4][y] = newtile(constants.TERRAIN["wall"])
-					map.t_[x+4][y+5] = newtile(constants.TERRAIN["wall"])
-					map.t_[x+5][y+4] = newtile(constants.TERRAIN["wall"])
-	"""
+
+	for z in range(0,15):
+		yrand = randint(2,map.height-3)
+		xrand = randint(2,map.width-3)
+		while map.t_[xrand][yrand].type != "floor":
+			yrand = randint(2,map.height-3)
+			xrand = randint(2,map.width-3)
+		trap = ec.Entity(
+			xrand,yrand,
+			char_input = drawval.CHARS["trapa"],
+			fg = constants.TERRAIN["floor"]["fg"],
+			bg = constants.TERRAIN["floor"]["bg"],
+			hp = 1,speed = 1,
+			faction = constants.Faction.Enemy,
+			draw_order = constants.DrawOrder.FLOOR,
+			block_m = False,
+			dispname = "")
+		trap.istrap = True
+		entities.append(trap)
 	map.walls_and_pits()
 	
 	return

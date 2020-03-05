@@ -2,6 +2,7 @@ import constants as cx
 import render as re
 import math
 import tcod.event
+import random
 
 class Entity:
 
@@ -21,11 +22,13 @@ class Entity:
 		self.bg = bg
 		self.stats = Stats(hp,speed)
 		self.block_m = block_m
+		self.block_j = block_m
 		self.block_s = False
 		self.faction = faction
 		self.dispname = dispname
 		self.draw_order = draw_order
 		self.sightrange = 10
+		self.istrap = False
 
 	def move(self,dx,dy,map,entities,map_console,message_console,messages):
 		if (self.x+dx > -1 and self.x+dx < map.width and self.y+dy > -1 and self.y+dy < map.height):
@@ -37,7 +40,8 @@ class Entity:
 				elif target_entity.faction != self.faction:
 					self.attack(target_entity,message_console,messages)
 			elif map.t_[self.x+dx][self.y+dy].block_m:
-				re.messageprint(message_console,"You're blocked in that direction!",messages)
+				message = "A " + map.t_[self.x+dx][self.y+dy].type + " blocks your way."
+				re.messageprint(message_console,message,messages)
 			else:
 				self.x+=dx
 				self.y+=dy
@@ -65,9 +69,10 @@ class Entity:
 	def talk(self,other,message_console,messages):
 
 		message = re.construct_message(self,other," talk to ", " talks to ")
+		message = ""
 		if message != "":
 			re.messageprint(message_console,message,messages)
-	
+		
 	def attack(self,other,message_console,messages):
 	
 		damage = self.stats.at - other.stats.df

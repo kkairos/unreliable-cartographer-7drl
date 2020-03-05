@@ -57,19 +57,19 @@ SETTINGS = [
 DESC = {
 	"INPUT_SEL" : [
 	"\nMOVE:     REST: 5,. \n"\
-	"7 8 9               \n"\
+	"7 8 9     JUMP: F   \n"\
 	" \|/                \n"\
 	"4-@-6               \n"\
 	" /|\                \n"\
 	"1 2 3               ",
 	"\nMOVE:     REST: S,. \n"\
-	"Q W E               \n"\
+	"Q W E     JUMP: F   \n"\
 	" \|/                \n"\
 	"A-@-D               \n"\
 	" /|\                \n"\
 	"Z X C               ",
 	"\nMOVE:     REST: .   \n"\
-	"Y K U               \n"\
+	"Y K U     JUMP: F   \n"\
 	" \|/                \n"\
 	"H-@-L               \n"\
 	" /|\                \n"\
@@ -136,7 +136,7 @@ TERRAIN = {
 		"fg" : "pit-fg",
 		"bg" : "pit-bg",
 		"type" : "pit",
-		"falloff-exp" : float(1.25)
+		"falloff-exp" : float(1.25),
 		},
 	"nav" : {
 		"block_m" : False,
@@ -146,6 +146,6 @@ TERRAIN = {
 		"fg" : "black",
 		"bg" : "black",
 		"type" : "nav",
-		"falloff-exp" : float(1.0)
+		"falloff-exp" : float(1.0),
 		},
 	}

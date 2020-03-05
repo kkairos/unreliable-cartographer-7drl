@@ -2,6 +2,7 @@ import tcod
 import tcod.event as tcv
 import constants
 import drawval
+from random import randint
 
 # Movement
 def draw_all(map,map_console,entities,fov):
@@ -9,13 +10,14 @@ def draw_all(map,map_console,entities,fov):
 		for x in entities:
 			if fov[x.x][x.y] == True:
 				if x.draw_order == y:
-					draw_e(map_console,x)
+					draw_e(map_console,fov,x,True)
 			elif (map.t_[x.x][x.y].explored == True and (x.draw_order == constants.DrawOrder.FLOOR)):
-				draw_e(map_console,x,True)
+				draw_e(map_console,fov,x,True)
 	
-def clear_all(map_console,entities):
+def clear_all(map,map_console,entities):
 	for x in entities:
-		clear_e(map_console,x)
+		if map.t_[x.x][x.y].explored:
+			clear_e(map_console,x)
 
 def draw_s(menu_console,menu_selection):
 	tcod.console_set_default_foreground(menu_console, drawval.COLORS[14])
@@ -24,12 +26,10 @@ def draw_s(menu_console,menu_selection):
 def clear_s(menu_console,menu_selection):
 	menu_console.put_char(2, constants.SETTINGS[menu_selection]["yval"], ord(" "), tcod.BKGND_DEFAULT)
 
-def draw_e(map_console,x,out_of_sight=False):
-	if out_of_sight:
-		tcod.console_set_default_foreground(map_console, drawval.COLORS[8])
-	else:
-		tcod.console_set_default_foreground(map_console, drawval.COLORS[x.fg])
-	map_console.put_char(x.x, x.y, x.char, x.bg)
+def draw_e(map_console,fov,x,out_of_sight=False):
+	warm_fg, cool_fg = color_mods(drawval.COLORS[x.fg])
+	tcod.console_set_default_foreground(map_console, color_diff(warm_fg,cool_fg,fov[x.x][x.y]))
+	map_console.put_char(x.x, x.y, x.char, tcod.BKGND_DEFAULT)
 	
 def clear_e(map_console,x):
 	map_console.put_char(x.x, x.y, ord(" "), tcod.BKGND_DEFAULT)
@@ -38,21 +38,21 @@ def draw_paper_map(paper_map,map_console):
 	
 	for y in range(map_console.height):
 		for x in range(map_console.width):
-			
+
 			map_console.put_char(x, y, paper_map.t_[x][y].char, tcod.BKGND_DEFAULT)
 			map_console.fg[x,y] = paper_map.t_[x][y].fg
-			map_console.bg[x,y] = paper_map.t_[x][y].bg			
-				
+			map_console.bg[x,y] = paper_map.t_[x][y].bg
+			if paper_map.t_[x][y].fg == drawval.COLORS["map-red"] and paper_map.t_[x][y].char == 338:
+				print("wut")
+
 def draw_map(map,paper_map,map_console,fov):
 	
 	for y in range(map_console.height):
 		for x in range(map_console.width):
-
 			#get warm and cool versions of colors
 			
 			warm_fg, cool_fg = color_mods(map.t_[x][y].fg)
 			warm_bg, cool_bg = color_mods(map.t_[x][y].bg)
-			
 			
 			if fov[x][y] > 0:
 				map_console.put_char(x, y, map.t_[x][y].char, tcod.BKGND_DEFAULT)
@@ -65,13 +65,12 @@ def draw_map(map,paper_map,map_console,fov):
 				map_console.bg[x,y] = cool_bg
 			elif paper_map.t_[x][y].explored == False:
 				if explored_around(map,x,y):
-					if paper_map.t_[x][y].type == "wall" or paper_map.t_[x][y].type == "floor":
+					if paper_map.t_[x][y].type == "wall" or paper_map.t_[x][y].type == "floor" or paper_map.t_[x][y].type == "trap":
 						tmp_fg = paper_map.t_[x][y].fg
 						tmp_bg = color_darken(paper_map.t_[x][y].bg)
 					else:
 						tmp_fg = paper_map.t_[x][y].fg
 						tmp_bg = color_darken(paper_map.t_[x][y].bg)
-					
 					map_console.fg[x,y] = tmp_fg
 					map_console.bg[x,y] = tmp_bg
 					paper_map.t_[x][y].explored = True
