@@ -157,12 +157,27 @@ def console_borders(z,x0,y0,x1,y1):
 
 def messageprint(z,s,m):
 	z.clear(32,drawval.COLORS[15],drawval.COLORS[0])
-	m.append(s)
+	s = "> " + s
+	if len(s) > z.width:
+
+		mms = []
+		print(str(len(s)) + " " + str(z.width))
+		while ((s.rfind(" ",0,(z.width-1)) != -1) and (len(s) > z.width)):
+			dex = s.rfind(" ",0,(z.width-1))
+			mms.append(s[0:(dex)])
+			s = s[(dex+1):(len(s))]
+		mms.append(s)
+		
+		for ms in mms:
+			m.append(ms)
+			print(ms)
+	else:
+		m.append(s)
 	for x in range(0,z.height):
 		if m[len(m)-1-x] != "":
-			z.print(0,z.height-1-x,"> " + m[len(m)-1-x],drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
-	print(s)
-
+			#z.print(0,z.height-1-x,"> " + m[len(m)-1-x],drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+			z.print(0,z.height-1-x,m[len(m)-1-x],drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+		
 #message construction for basic actions
 
 def construct_message(

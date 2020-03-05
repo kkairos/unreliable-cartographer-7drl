@@ -5,11 +5,12 @@ import drawval
 
 class Tile:
 
-	def __init__(self,block_m,block_s,char,fg,bg,type,falloff_exp):
+	def __init__(self,block_m,block_j,block_s,char,fg,bg,type,falloff_exp):
 		self.block_m = block_m
 		if block_s is None:
 			block_s = block_m
 		self.block_s = block_s
+		self.block_j = block_j
 		self.char = char
 		self.fg = drawval.COLORS[fg]
 		self.bg = drawval.COLORS[bg]
@@ -20,6 +21,7 @@ class Tile:
 def newtile(terrain):
 	return Tile(
 		terrain["block_m"],
+		terrain["block_j"],
 		terrain["block_s"],
 		terrain["char"],
 		terrain["fg"],
@@ -182,7 +184,7 @@ def make_map(map):
 			if zzrand == 1:
 				map.draw_square(x+1,y+1,3,3,"pit","wall")
 			if zzrand == 2:
-				map.draw_square(x+1,y+1,3,3,"pit","wall")
+				map.draw_square(x+1,y+1,3,3,"pit","floor")
 			if zzrand == 3:
 				map.draw_square(x+2,y+2,1,1,"wall","solidwall")
 			if zzrand == 4:
@@ -208,7 +210,20 @@ def make_map(map):
 						map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["wall"])
 					else:
 						map.t_[x+zrand2][y+zrand3] = newtile(constants.TERRAIN["pit"])
-
+			if zzrand in (1,2,4):
+				if randint(0,4) > 1:
+					for zdoub in ((x+1,y),(x,y+1),(x+1,y+5),(x,y+4), (x+5,y+1),(x+4,y),(x+4,y+5),(x+5,y+4)):
+						map.t_[zdoub[0]][zdoub[1]] = newtile(constants.TERRAIN["wall"])
+	"""
+					map.t_[x+1][y] = newtile(constants.TERRAIN["wall"])
+					map.t_[x][y+1] = newtile(constants.TERRAIN["wall"])
+					map.t_[x+1][y+5] = newtile(constants.TERRAIN["wall"])
+					map.t_[x][y+4] = newtile(constants.TERRAIN["wall"])
+					map.t_[x+5][y+1] = newtile(constants.TERRAIN["wall"])
+					map.t_[x+4][y] = newtile(constants.TERRAIN["wall"])
+					map.t_[x+4][y+5] = newtile(constants.TERRAIN["wall"])
+					map.t_[x+5][y+4] = newtile(constants.TERRAIN["wall"])
+	"""
 	map.walls_and_pits()
 	
 	return

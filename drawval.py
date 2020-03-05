@@ -31,6 +31,7 @@ COLOR_BOOST = {
 
 	* others are mainly reference at this point but shouldn't necessarily be tweaked yet
 """
+
 COLORS = {
 	"wall-fg" : (180,140,120),
 	"wall-bg" : (50,50,50),
@@ -77,5 +78,6 @@ LINES = {
 CHARS  ={
 	"person" : 272,
 	"trap0" : 338,
-	"trap1" : 339
+	"trap1" : 339,
+	"person_fall" : [304,305,306]
 	}

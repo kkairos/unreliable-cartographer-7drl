@@ -100,5 +100,8 @@ def key_input(sym):
 	
 	if sym == tcv.K_ESCAPE:
 		return {'exit': True}
+		
+	if sym == tcv.K_f:
+		return {'jump': True}
 	
 	return {}

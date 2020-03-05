@@ -88,7 +88,7 @@ for x in range(0,16):
 	walldraw.append(x+256)
 	
 pitdraw = []
-for x in range(0,5):
+for x in range(0,8):
 	pitdraw.append(x+288)
 
 FONT_FILE = [
@@ -100,6 +100,7 @@ FONT_FILE = [
 TERRAIN = {
 	"wall": {
 		"block_m" : True,
+		"block_j" : True,
 		"block_s" : True,
 		"char" : 178,
 		"fg" : "wall-fg",
@@ -109,6 +110,7 @@ TERRAIN = {
 		},
 	"solidwall": {
 		"block_m" : True,
+		"block_j" : True,
 		"block_s" : True,
 		"char" : 210,
 		"fg" : "black",
@@ -118,6 +120,7 @@ TERRAIN = {
 		},
 	"floor" : {
 		"block_m" : False,
+		"block_j" : False,
 		"block_s" : False,
 		"char" : 273,
 		"fg" : "floor-fg",
@@ -127,6 +130,7 @@ TERRAIN = {
 		},
 	"pit" : {
 		"block_m" : True,
+		"block_j" : False,
 		"block_s" : False,
 		"char" : 352,
 		"fg" : "pit-fg",
@@ -136,6 +140,7 @@ TERRAIN = {
 		},
 	"nav" : {
 		"block_m" : False,
+		"block_j" : False,
 		"block_s" : False,
 		"char" : ord(" "),
 		"fg" : "black",

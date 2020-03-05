@@ -1,6 +1,7 @@
 import constants as cx
 import render as re
 import math
+import tcod.event
 
 class Entity:
 
@@ -26,7 +27,7 @@ class Entity:
 		self.draw_order = draw_order
 		self.sightrange = 10
 
-	def move(self,dx,dy,map,entities,message_console,messages):
+	def move(self,dx,dy,map,entities,map_console,message_console,messages):
 		if (self.x+dx > -1 and self.x+dx < map.width and self.y+dy > -1 and self.y+dy < map.height):
 			
 			target_entity = blocking_entity(entities,self.x+dx,self.y+dy)
@@ -40,6 +41,26 @@ class Entity:
 			else:
 				self.x+=dx
 				self.y+=dy
+
+	def jump(self,dx,dy,map,entities,map_console,message_console,messages):
+		if (self.x+dx > -1 and self.x+dx < map.width and self.y+dy > -1 and self.y+dy < map.height):
+			print(str(self.x+dx)+","+str(self.y+dy))
+			if map.t_[self.x+dx][self.y+dy].block_j:
+				re.messageprint(message_console,"*THUD*",messages)
+				return False
+			else:
+				self.x+=dx
+				self.y+=dy
+				return True
+			
+			#entity blocking code. not that useful here.
+			
+			#target_entity = blocking_entity(entities,self.x+dx,self.y+dy)
+			#if target_entity is not None:
+			#	if target_entity.faction == self.faction:
+			#		self.talk(target_entity,message_console,messages)
+			#	elif target_entity.faction != self.faction:
+			#		self.attack(target_entity,message_console,messages)
 
 	def talk(self,other,message_console,messages):
 
