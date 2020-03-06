@@ -97,6 +97,13 @@ FONT_FILE = [
 	"uc-tiles-16x16-alpha.png",
 	]
 
+TRAPS = {
+	0 : {"name" : "Pit Trap"},
+	1 : {"name" : "Slip'n'Slide Trap"},
+	2 : {"name" : "Fling Back Trap"},
+	3 : {"name" : "Oh Dear! Trap"}
+	}
+
 TERRAIN = {
 	"wall": {
 		"block_m" : True,

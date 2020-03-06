@@ -139,7 +139,7 @@ def rand_square(x0,x1,y0,y1,w0,w1,h0,h1):
 	
 	return rand_s_x, rand_s_y, rand_s_w, rand_s_h
 	
-def make_map(map,entities):
+def make_map(map,entities,G_TRAP_CHARS):
 	x0,x1 = 5, 5
 	y0,y1 = 7, 7
 	w0,w1 = 5, 7
@@ -216,24 +216,56 @@ def make_map(map,entities):
 					for zdoub in ((x+1,y),(x,y+1),(x+1,y+5),(x,y+4), (x+5,y+1),(x+4,y),(x+4,y+5),(x+5,y+4)):
 						map.t_[zdoub[0]][zdoub[1]] = newtile(constants.TERRAIN["wall"])
 
-	for z in range(0,15):
+	trapxys = []
+	for z in range(0,24):
+		trap_type = z%4
 		yrand = randint(2,map.height-3)
 		xrand = randint(2,map.width-3)
-		while map.t_[xrand][yrand].type != "floor":
+		safedistval = 7
+		distval = 5
+		tries = 0
+		while (map.t_[xrand][yrand].type != "floor" or distval < safedistval):
 			yrand = randint(2,map.height-3)
 			xrand = randint(2,map.width-3)
+
+			distvals = []
+			tries+=1
+			for entity in entities:
+				xa,ya = entity.x,entity.y
+				distvals.append(abs(yrand-ya)+abs(xrand-xa))
+			distval = min(distvals)
+			if tries > 100:
+				distval = 8
+
+		trapxys.append((xrand,yrand))
 		trap = ec.Entity(
 			xrand,yrand,
-			char_input = drawval.CHARS["trapa"],
-			fg = constants.TERRAIN["floor"]["fg"],
+			char_input = G_TRAP_CHARS[trap_type],
+			fg = "floor-trap-fg",
 			bg = constants.TERRAIN["floor"]["bg"],
 			hp = 1,speed = 1,
 			faction = constants.Faction.Enemy,
 			draw_order = constants.DrawOrder.FLOOR,
 			block_m = False,
-			dispname = "")
+			dispname = constants.TRAPS[trap_type]["name"])
 		trap.istrap = True
+		trap.traptype = trap_type
 		entities.append(trap)
+		if trap.traptype == 0:
+			lc = 0
+			trap_remotes(map,trap.x,trap.y,2)
+
 	map.walls_and_pits()
-	
+
 	return
+	
+def trap_remotes(map,trap_x,trap_y,radius):
+	lc = 0
+	for x in range(trap_x-radius,trap_x+radius+1):
+		for y in (trap_y+lc,trap_y-lc):
+			if x > -1 and x < map.width and y > -1 and y < map.height:
+				map.t_[x][y].char = drawval.CHARS["remote_trap"]
+		if x < trap_x:
+			lc+=1
+		if x > trap_x-1:
+			lc-=1

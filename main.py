@@ -7,22 +7,19 @@ import drawval
 import map
 import menu
 from time import sleep
-from random import randint,shuffle
+from random import randint, shuffle
 
-def new_level(map_w,map_h,entities):
+def new_level(map_w,map_h,entities,G_TRAP_CHARS,G_GLYPH_CHARS):
 	level_map = map.Map(map_w,map_h)
-	map.make_map(level_map,entities)
+	map.make_map(level_map,entities,G_TRAP_CHARS)
 	paper_map = map.Map(map_w,map_h)
-	#paper_map.t_ = level_map.t_.copy
 	for y in range(map_h):
 		for x in range(map_w):
 			z = level_map.t_[x][y].type
 			paper_map.t_[x][y] = map.newtile(cx.TERRAIN[z])
 			paper_map.t_[x][y].fg = drawval.COLORS["map-black"]
 			paper_map.t_[x][y].bg = drawval.COLORS["map-white"]
-			
-		#	print(str(level_map.t_[x][y].char)+" " + str(paper_map.t_[x][y].char))
-	
+
 	paper_map.walls_and_pits()
 	
 	for y in range(map_h):
@@ -41,19 +38,10 @@ def new_level(map_w,map_h,entities):
 				paper_map.t_[x][y].bg = drawval.COLORS["map-white"]
 			for entity in entities:
 				if ((entity.x == x) and (entity.y == y) and entity.istrap):
-					paper_map.t_[x][y].char = int(entity.char) + 64
+					paper_map.t_[x][y].char = G_GLYPH_CHARS[entity.traptype]
 					paper_map.t_[x][y].fg = drawval.COLORS["map-red"]
+					
 					paper_map.t_[x][y].type = "trap"
-	paper_map.t_[paper_map.width//2][10].char = 338
-	paper_map.t_[paper_map.width//2][10].fg = drawval.COLORS["map-red"]	
-	paper_map.t_[paper_map.width-4][0].char = 338
-	paper_map.t_[paper_map.width-4][0].fg = drawval.COLORS["map-red"]
-	paper_map.t_[paper_map.width-3][0].char = 338
-	paper_map.t_[paper_map.width-3][0].fg = drawval.COLORS["map-red"]
-	paper_map.t_[paper_map.width-2][0].char = 338
-	paper_map.t_[paper_map.width-2][0].fg = drawval.COLORS["map-red"]
-	paper_map.t_[paper_map.width-1][0].char = 339
-	paper_map.t_[paper_map.width-1][0].fg = drawval.COLORS["map-red"]
 	
 	return level_map, paper_map
 
@@ -61,12 +49,15 @@ def draw_loop(player, level_map, paper_map, map_console, main_console, message_c
 	fov = player.fov(level_map,entities)
 	re.draw_map(level_map, paper_map, map_console, fov)
 	re.draw_all(level_map,map_console,entities,fov)
-	re.draw_con(main_console,map_console,status_console.width,0)
+	re.draw_con(main_console,map_console,main_console.width-map_console.width,0)
+	re.draw_con(main_console,status_console,0,0)
 	re.draw_con(main_console,message_console,status_console.width,main_console.height-message_console.height)
 	tcod.console_flush()
 	re.clear_all(level_map,map_console,entities)
 
 def main():
+
+	#basic screen setup
 	
 	screen_width = 80
 	screen_height = 45
@@ -75,15 +66,34 @@ def main():
 	
 	map_console_w = 60
 	map_console_h = 40
+
+	#tcod events setup
+
+	key = tcod.Key()
+	mouse = tcod.Mouse()
 	
+	#create player and put player in entities array
+
 	player = ec.Entity(4,2,drawval.CHARS["person"],15,0,10,10,cx.Faction.Ally,cx.DrawOrder.PLAYER,True,"You")
 	entities = [player]
 
-	level_map, paper_map = new_level(map_w,map_h,entities)
+	player_state = 1	#player is alive
 
-	player_state = 1	#alive
-	key = tcod.Key()
-	mouse = tcod.Mouse()
+	# get and shuffle trap chars. 4 for floor tiles, and 4 for map glyphs
+	
+	G_TEMP_CHARS = drawval.TRAP_CHARS
+	
+	shuffle(G_TEMP_CHARS)
+	
+	G_TRAP_CHARS = G_TEMP_CHARS[0:4]
+	G_GLYPH_CHARS = G_TEMP_CHARS[4:8]
+	for x in range(0,len(G_GLYPH_CHARS)):
+		G_GLYPH_CHARS[x]+=64
+
+
+	#create new level map
+
+	level_map, paper_map = new_level(map_w,map_h,entities,G_TRAP_CHARS,G_GLYPH_CHARS)
 	
 	tcod.console_set_custom_font(cx.FONT_FILE[cx.SETTINGS[1]["sel"]],
 		tcod.FONT_TYPE_GRAYSCALE | tcod.FONT_LAYOUT_ASCII_INROW,
@@ -98,19 +108,11 @@ def main():
 	
 	status_console = tcod.console.Console(main_console.width-map_console.width,main_console.height)
 	
-	trap_chars = drawval.TRAP_CHARS
-	glyph_chars = drawval.GLYPH_CHARS
-	#print(trap_chars)
-	trap_chars = shuffle(trap_chars)
-	#print(trap_chars)
-	#for x in range(0,8):
-	#	glyph_chars[x] = trap_chars[x]
-	
 	messages = []
 	for x in range(0,message_console.height):
 		messages.append("")
 	
-	welcome_message = "Welcome to Unreliable Cartographer. This is a game about exploring a dungeon with a map of increasingly dubious accuracy and dodging traps along the way. Press [ENTER] to see controls. We hope you like it!"
+	welcome_message = "Welcome to *Unreliable Cartographer.* This is a game about exploring a dungeon with a map of increasingly dubious accuracy and dodging traps along the way. Press [ENTER] to see controls. We hope you like it!"
 	re.messageprint(message_console, welcome_message, messages )
 	
 	menu.menu_print(menu_console)
@@ -124,9 +126,6 @@ def main():
 	
 	#re.console_borders(map_console,0,0,map_console.width-1,map_console.height-1)
 	
-#	move = False
-#	exit = False
-#	pause = action.get('pause')
 	jump_trigger = False
 	
 	re.draw_paper_map(paper_map, map_console)
@@ -154,7 +153,7 @@ def main():
 									break
 								else:
 									draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities)
-									sleep(0.0095)
+									sleep(0.0080)
 							jump_trigger = False
 					if level_map.t_[player.x][player.y].type == "pit":
 						fov = player.fov(level_map,entities)
@@ -173,6 +172,12 @@ def main():
 						elif jump_trigger:		
 							re.messageprint(message_console, "Jump cancelled.", messages )
 							jump_trigger = False
+					player.istrapped(level_map,entities,map_console,message_console,messages)
+					#print('running player istrapped')
+					for entity in entities:
+						if entity.istrap and entity.trapstate > 0:
+							entity.do_trap(level_map,paper_map,main_console,map_console,fov,message_console,messages,entities)
+					
 				if exit:
 					return True
 				if pause:

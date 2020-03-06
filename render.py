@@ -42,8 +42,6 @@ def draw_paper_map(paper_map,map_console):
 			map_console.put_char(x, y, paper_map.t_[x][y].char, tcod.BKGND_DEFAULT)
 			map_console.fg[x,y] = paper_map.t_[x][y].fg
 			map_console.bg[x,y] = paper_map.t_[x][y].bg
-			if paper_map.t_[x][y].fg == drawval.COLORS["map-red"] and paper_map.t_[x][y].char == 338:
-				print("wut")
 
 def draw_map(map,paper_map,map_console,fov):
 	
@@ -162,7 +160,7 @@ def messageprint(z,s,m):
 		mms = []
 		print(str(len(s)) + " " + str(z.width))
 		while ((s.rfind(" ",0,(z.width-1)) != -1) and (len(s) > z.width)):
-			dex = s.rfind(" ",0,(z.width-1))
+			dex = s.rfind(" ",0,(z.width+1))
 			mms.append(s[0:(dex)])
 			s = s[(dex+1):(len(s))]
 		mms.append(s)

@@ -34,14 +34,15 @@ COLOR_BOOST = {
 
 COLORS = {
 	"wall-fg" : (180,140,120),
-	"wall-bg" : (50,50,50),
-	"floor-fg" : (34,34,34),
-	"floor-bg" : (50,50,50),
-	"pit-fg" : (34,34,34),
+	"wall-bg" : (55,55,65),
+	"floor-trap-fg" : (40,50,60),
+	"floor-fg" : (45,45,60),
+	"floor-bg" : (55,55,65),
+	"pit-fg" : (55,55,65),
 	"pit-bg" : (0,0,0),
-	"map-white" : (180,172,162),
+	"map-white" : (160,152,142),
 	"map-black" : (65,65,65),
-	"map-red" : (128,95,95),
+	"map-red" : (160,45,45),
 	"black" : (0,0,0),
 	15 : (255,255,255),
 	14 : (255,255,84),
@@ -76,19 +77,13 @@ LINES = {
 	}
 
 TRAP_CHARS = []
-GLYPH_CHARS = []
 
 for x in range(0,8):
 	TRAP_CHARS.append(274+x)
-	GLYPH_CHARS.append(338+x)
-	
-print(TRAP_CHARS)
 
 CHARS  ={
 	"person" : 272,
-	"trapa" : 274,
-	"trapb" : 275,
-	"trap0" : 338,
-	"trap1" : 339,
-	"person_fall" : [304,305,306,307,308]
+	"remote_trap" : 282,
+	"person_fall" : [304,305,306,307,308],
+	"floor_give" : [352,353,354,355]
 	}

@@ -3,6 +3,9 @@ import render as re
 import math
 import tcod.event
 import random
+import drawval
+import map as mp
+from time import sleep
 
 class Entity:
 
@@ -29,6 +32,8 @@ class Entity:
 		self.draw_order = draw_order
 		self.sightrange = 10
 		self.istrap = False
+		self.traptype = -1
+		self.trapstate = 0
 
 	def move(self,dx,dy,map,entities,map_console,message_console,messages):
 		if (self.x+dx > -1 and self.x+dx < map.width and self.y+dy > -1 and self.y+dy < map.height):
@@ -56,8 +61,8 @@ class Entity:
 				self.x+=dx
 				self.y+=dy
 				return True
-			
-			#entity blocking code. not that useful here.
+				
+			#entity blocking code. not that useful here. yet
 			
 			#target_entity = blocking_entity(entities,self.x+dx,self.y+dy)
 			#if target_entity is not None:
@@ -65,6 +70,55 @@ class Entity:
 			#		self.talk(target_entity,message_console,messages)
 			#	elif target_entity.faction != self.faction:
 			#		self.attack(target_entity,message_console,messages)
+			
+	def istrapped(self,map,entities,map_console,message_console,messages):
+		trap_entity = trap_at(entities,self.x,self.y)
+		if (trap_entity is not None):
+			if trap_entity.trapstate == 0:
+				trap_entity.trapstate = 1
+				message = re.construct_message(self,trap_entity," trigger a "," triggers a ")
+				re.messageprint(message_console,message,messages)
+	
+	def do_trap(self,map,paper_map,main_console,map_console,fov,message_console,messages,entities):
+		trap_type = self.traptype
+		if trap_type in (0,1,2,3):
+			radius = 2
+			for z in drawval.CHARS["floor_give"]:
+				lc=0
+				for x in range(self.x-radius,self.x+radius+1):
+					for y in (self.y+lc,self.y-lc):
+						if x > -1 and x < map.width and y > -1 and y < map.height:
+							if map.t_[x][y].type == "floor":
+								map.t_[x][y].char = z
+								map.t_[x][y].fg = drawval.COLORS["floor-bg"]
+								map.t_[x][y].bg = drawval.COLORS["pit-bg"]
+					if x < self.x:
+						lc+=1
+					if x > self.x-1:
+						lc-=1
+
+				fov = entities[0].fov(map,entities)
+				re.draw_map(map, paper_map, map_console, fov)
+				re.draw_all(map,map_console,entities,fov)
+				re.draw_con(main_console,map_console,main_console.width-map_console.width,0)
+				re.draw_con(main_console,message_console,main_console.width-map_console.width,main_console.height-message_console.height)
+				tcod.console_flush()
+				re.clear_all(map,map_console,entities)
+				sleep(0.050)
+
+			lc=0
+			for x in range(self.x-radius,self.x+radius+1):
+				for y in (self.y+lc,self.y-lc):
+					if x > -1 and x < map.width and y > -1 and y < map.height:
+						if map.t_[x][y].type == "floor":
+							map.t_[x][y] = mp.newtile(cx.TERRAIN["pit"])
+				if x < self.x:
+					lc+=1
+				if x > self.x-1:
+					lc-=1
+			map.walls_and_pits()
+
+		self.trapstate = -1
 
 	def talk(self,other,message_console,messages):
 
@@ -129,6 +183,12 @@ class Entity:
 def blocking_entity(entities,x,y):
 	for entity in entities:
 		if ((entity.x == x) and (entity.y == y) and entity.block_m):
+			return entity
+	return None
+
+def trap_at(entities,x,y):
+	for entity in entities:
+		if ((entity.x == x) and (entity.y == y) and entity.istrap):
 			return entity
 	return None
 
