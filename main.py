@@ -155,16 +155,8 @@ def main():
 									draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities)
 									sleep(0.0080)
 							jump_trigger = False
-					if level_map.t_[player.x][player.y].type == "pit":
-						fov = player.fov(level_map,entities)
-						
-						for z in drawval.CHARS["person_fall"]:
-							player.char = z
-							draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities)
-							sleep(0.005)
-						player_state = 0
-						entities.remove(player)
-						re.messageprint(message_console,"Oh, dear! You've fallen down a pit!",messages)
+						player.lastx = dx
+						player.lasty = dy
 					if jump:
 						if not jump_trigger:
 							re.messageprint(message_console, "Press [DIR] to jump 2 squares away in a direction, any other key to cancel.", messages )
@@ -177,7 +169,16 @@ def main():
 					for entity in entities:
 						if entity.istrap and entity.trapstate > 0:
 							entity.do_trap(level_map,paper_map,main_console,map_console,fov,message_console,messages,entities)
-					
+					if level_map.t_[player.x][player.y].type == "pit":
+						fov = player.fov(level_map,entities)
+
+						for z in drawval.CHARS["person_fall"]:
+							player.char = z
+							draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities)
+							sleep(0.005)
+						player_state = 0
+						entities.remove(player)
+						re.messageprint(message_console,"Oh, dear! You've fallen down a pit!",messages)
 				if exit:
 					return True
 				if pause:

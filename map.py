@@ -18,6 +18,8 @@ class Tile:
 		self.explored = False
 		self.type = type
 		self.falloff_exp = falloff_exp
+		self.lastx = 0
+		self.lasty = 0
 
 def newtile(terrain):
 	return Tile(
