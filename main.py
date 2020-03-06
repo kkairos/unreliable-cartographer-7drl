@@ -7,6 +7,7 @@ import drawval
 import map
 import menu
 from time import sleep
+from random import randint,shuffle
 
 def new_level(map_w,map_h,entities):
 	level_map = map.Map(map_w,map_h)
@@ -23,7 +24,7 @@ def new_level(map_w,map_h,entities):
 		#	print(str(level_map.t_[x][y].char)+" " + str(paper_map.t_[x][y].char))
 	
 	paper_map.walls_and_pits()
-			
+	
 	for y in range(map_h):
 		for x in range(map_w):
 			if paper_map.t_[x][y].type == "wall":
@@ -96,6 +97,14 @@ def main():
 	message_console = tcod.console.Console(map_console.width,main_console.height-map_console.height)
 	
 	status_console = tcod.console.Console(main_console.width-map_console.width,main_console.height)
+	
+	trap_chars = drawval.TRAP_CHARS
+	glyph_chars = drawval.GLYPH_CHARS
+	#print(trap_chars)
+	trap_chars = shuffle(trap_chars)
+	#print(trap_chars)
+	#for x in range(0,8):
+	#	glyph_chars[x] = trap_chars[x]
 	
 	messages = []
 	for x in range(0,message_console.height):

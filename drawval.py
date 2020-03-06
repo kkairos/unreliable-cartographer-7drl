@@ -16,7 +16,7 @@ COLOR_BOOST = {
 	#"cool_darken" : 0.25			# multiplier to darken cool colors
     "warm" : [1.85, 1.35,1.00],		# multipliers for warm colors in r,g,b format
 	"cool" : [0.60,0.70,1.8],		# multipliers for cool colors in r,g,b format
-	"cool_darken" : 0.3			# multiplier to darken cool colors
+	"cool_darken" : 0.25			# multiplier to darken cool colors
 	}
 
 """
@@ -35,9 +35,9 @@ COLOR_BOOST = {
 COLORS = {
 	"wall-fg" : (180,140,120),
 	"wall-bg" : (50,50,50),
-	"floor-fg" : (20,20,20),   #  (42,42,42),
+	"floor-fg" : (34,34,34),
 	"floor-bg" : (50,50,50),
-	"pit-fg" : (35,35,35),     # (42,42,42),
+	"pit-fg" : (34,34,34),
 	"pit-bg" : (0,0,0),
 	"map-white" : (180,172,162),
 	"map-black" : (65,65,65),
@@ -75,23 +75,20 @@ LINES = {
 	"top-bottom" : 205
 	}
 
+TRAP_CHARS = []
+GLYPH_CHARS = []
+
+for x in range(0,8):
+	TRAP_CHARS.append(274+x)
+	GLYPH_CHARS.append(338+x)
+	
+print(TRAP_CHARS)
+
 CHARS  ={
 	"person" : 272,
 	"trapa" : 274,
 	"trapb" : 275,
-	"trapc" : 276,
-	"trapd" : 277,
-	"trape" : 278,
-	"trapf" : 279,
-	"trapg" : 280,
-	"traph" : 281,
 	"trap0" : 338,
 	"trap1" : 339,
-	"trap2" : 340,
-	"trap3" : 341,
-	"trap4" : 342,
-	"trap5" : 343,
-	"trap6" : 344,
-	"trap7" : 345,
 	"person_fall" : [304,305,306,307,308]
 	}
