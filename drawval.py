@@ -11,12 +11,9 @@ class DrawOrder(Enum):
 	PLAYER = 2
 
 COLOR_BOOST = {
-	#"warm" : [1.85, 1.35,1.00],	# multipliers for warm colors in r,g,b format
-	#"cool" : [0.90,0.80,2],		# multipliers for cool colors in r,g,b format
-	#"cool_darken" : 0.25			# multiplier to darken cool colors
     "warm" : [1.85, 1.35,1.00],		# multipliers for warm colors in r,g,b format
 	"cool" : [0.60,0.70,1.8],		# multipliers for cool colors in r,g,b format
-	"cool_darken" : 0.25			# multiplier to darken cool colors
+	"cool_darken" : 0.3			# multiplier to darken cool colors
 	}
 
 """
@@ -35,10 +32,10 @@ COLOR_BOOST = {
 COLORS = {
 	"wall-fg" : (180,140,120),
 	"wall-bg" : (55,55,65),
-	"floor-trap-fg" : (40,50,60),
-	"floor-fg" : (45,45,60),
+	"floor-trap-fg" : (20,20,25),
+	"floor-fg" : (20,20,25),
 	"floor-bg" : (55,55,65),
-	"pit-fg" : (55,55,65),
+	"pit-fg" : (35,35,35), 
 	"pit-bg" : (0,0,0),
 	"map-white" : (160,152,142),
 	"map-black" : (65,65,65),
@@ -85,5 +82,6 @@ CHARS  ={
 	"person" : 272,
 	"remote_trap" : 282,
 	"person_fall" : [304,305,306,307,308],
-	"floor_give" : [352,353,354,355]
+	"floor_give" : [352,353,354,355],
+	"bolder" : 337
 	}
