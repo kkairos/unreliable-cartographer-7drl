@@ -1,5 +1,7 @@
 BSD 3-Clause License
 
+NB: This license is for the code. For the license for the tileset, see tiles-license.txt.
+
 Copyright (c) 2020, KKairos and ElectroManiacal
 All rights reserved.
 
