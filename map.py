@@ -257,10 +257,38 @@ def make_map(map,entities,G_TRAP_CHARS):
 			lc = 0
 			trap_remotes(map,trap.x,trap.y,2)
 
+	tries = 0
+	for z in range(0,24):	
+		yrand = randint(2,map.height-3)
+		xrand = randint(2,map.width-3)
+		while (map.t_[xrand][yrand].type != "floor") or entity_at_xy(entities,xrand,yrand) == True:
+			yrand = randint(2,map.height-3)
+			xrand = randint(2,map.width-3)
+			tries+=1
+
+		gold = ec.Entity(
+			xrand,yrand,
+			char_input = drawval.CHARS["gold"],
+			fg = "gold-fg",
+			bg = constants.TERRAIN["floor"]["bg"],
+			hp = 1,speed = 1,
+			faction = constants.Faction.Enemy,
+			draw_order = constants.DrawOrder.FLOOR,
+			block_m = False,
+			dispname = "gold")
+		gold.istrap = True
+		entities.append(gold)
+	
 	map.walls_and_pits()
 
 	return
-	
+
+def entity_at_xy(entities,x,y):
+	for entity in entities:
+		if entity.x == x and entity.y == y:
+			return True
+	return False
+
 def trap_remotes(map,trap_x,trap_y,radius):
 	lc = 0
 	for x in range(trap_x-radius,trap_x+radius+1):

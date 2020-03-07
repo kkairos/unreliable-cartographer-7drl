@@ -18,14 +18,11 @@ COLOR_BOOST = {
 
 """
 	format: [terrain]-[color]: 
-
 	* fg controls the color that the "white" in the PNG files will display
 	* bg controls the color that the "black" in the PNG files will display
-
 	* "map-white "and "map-black" are, appropriately, the background and foreground of map tiles by default
 	* "map-red" is what the mapmaker uses to emphasize traps
 	* "black" is what it says on the tin
-
 	* others are mainly reference at this point but shouldn't necessarily be tweaked yet
 """
 
@@ -41,6 +38,8 @@ COLORS = {
 	"map-black" : (65,65,65),
 	"map-red" : (160,45,45),
 	"black" : (0,0,0),
+	"gold-fg" : (233,233,56),
+	"boulder-fg" : (185,185,175),
 	15 : (255,255,255),
 	14 : (255,255,84),
 	13 : (255,84,255),
@@ -81,7 +80,8 @@ for x in range(0,8):
 CHARS  ={
 	"person" : 272,
 	"remote_trap" : 282,
+	"gold" : 283,
 	"person_fall" : [304,305,306,307,308],
 	"floor_give" : [352,353,354,355],
-	"bolder" : 337
+	"boulder" : 337
 	}

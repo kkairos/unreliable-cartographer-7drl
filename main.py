@@ -38,20 +38,25 @@ def new_level(map_w,map_h,entities,G_TRAP_CHARS,G_GLYPH_CHARS):
 				paper_map.t_[x][y].bg = drawval.COLORS["map-white"]
 			for entity in entities:
 				if ((entity.x == x) and (entity.y == y) and entity.istrap):
-					paper_map.t_[x][y].char = G_GLYPH_CHARS[entity.traptype]
-					paper_map.t_[x][y].fg = drawval.COLORS["map-red"]
-					
-					paper_map.t_[x][y].type = "trap"
+					if entity.dispname != "gold" and entity.dispname != "boulder":
+						paper_map.t_[x][y].char = G_GLYPH_CHARS[entity.traptype]
+						paper_map.t_[x][y].fg = drawval.COLORS["map-red"]
+						paper_map.t_[x][y].type = "trap"
+					elif entity.dispname == "gold":
+						paper_map.t_[x][y].char = drawval.CHARS["gold"]
+						paper_map.t_[x][y].fg = drawval.COLORS["map-red"]
 	
 	return level_map, paper_map
 
-def draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities):
+def draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities,player_state):
 	fov = player.fov(level_map,entities)
 	re.draw_map(level_map, paper_map, map_console, fov)
 	re.draw_all(level_map,map_console,entities,fov)
 	re.draw_con(main_console,map_console,main_console.width-map_console.width,0)
 	re.draw_con(main_console,status_console,0,0)
 	re.draw_con(main_console,message_console,status_console.width,main_console.height-message_console.height)
+	if player_state == 1:
+		re.status_con(status_console,1,status_console.height-3,entities[0])
 	tcod.console_flush()
 	re.clear_all(level_map,map_console,entities)
 
@@ -78,6 +83,9 @@ def main():
 	entities = [player]
 
 	player_state = 1	#player is alive
+	
+	player.gold = 0
+	player.floor_number = 1
 
 	# get and shuffle trap chars. 4 for floor tiles, and 4 for map glyphs
 	
@@ -106,16 +114,19 @@ def main():
 	
 	message_console = tcod.console.Console(map_console.width,main_console.height-map_console.height)
 	
-	status_console = tcod.console.Console(main_console.width-map_console.width,main_console.height)
+	status_console = tcod.console.Console(main_console.width-map_console.width,main_console.height,"F",None)
+	status_console.print(status_console.width//2,1,"The Unreliable\nCartographer",drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.CENTER)
+	re.legend_print(status_console,G_GLYPH_CHARS,1,4)
 	
 	messages = []
+	
 	for x in range(0,message_console.height):
 		messages.append("")
 	
-	welcome_message = "Welcome to *Unreliable Cartographer.* This is a game about exploring a dungeon with a map of increasingly dubious accuracy and dodging traps along the way. Press [ENTER] to see controls. We hope you like it!"
+	welcome_message = "Welcome to *The Unreliable Cartographer.* This is a game about exploring a dungeon with a map of increasingly dubious accuracy and dodging traps along the way. Press [ENTER] to see controls. We hope you like it!"
 	re.messageprint(message_console, welcome_message, messages )
 	
-	menu.menu_print(menu_console)
+	#menu.menu_print(menu_console)
 	
 	re.console_borders(menu_console,0,0,menu_console.width-1,menu_console.height-1)
 	
@@ -132,7 +143,7 @@ def main():
 	
 	while True:
 	
-		draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities)
+		draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities,player_state)
 		for event in tcod.event.wait():
 			if event.type == "KEYDOWN":
 				action = key_input(event.sym)
@@ -152,7 +163,7 @@ def main():
 								if player.jump(dx,dy,level_map,entities,map_console,message_console,messages) == False:
 									break
 								else:
-									draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities)
+									draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities,player_state)
 									sleep(0.0080)
 							jump_trigger = False
 						player.lastx = dx
@@ -165,20 +176,24 @@ def main():
 							re.messageprint(message_console, "Jump cancelled.", messages )
 							jump_trigger = False
 					player.istrapped(level_map,entities,map_console,message_console,messages)
-					#print('running player istrapped')
+					for entity in entities:
+						if entity.dispname == "Boulder":
+							entity.move(entity.persistent_x,entity.persistent_y,level_map,entities,map_console,message_console,messages)
 					for entity in entities:
 						if entity.istrap and entity.trapstate > 0:
 							entity.do_trap(level_map,paper_map,main_console,map_console,fov,message_console,messages,entities)
+							if entity.dispname == "gold":
+								entities.remove(entity)
 					if level_map.t_[player.x][player.y].type == "pit":
 						fov = player.fov(level_map,entities)
-
 						for z in drawval.CHARS["person_fall"]:
 							player.char = z
-							draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities)
-							sleep(0.005)
+							draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities,player_state)
 						player_state = 0
 						entities.remove(player)
 						re.messageprint(message_console,"Oh, dear! You've fallen down a pit!",messages)
+					if player.stats.hp < 1:
+						player_state = 0
 				if exit:
 					return True
 				if pause:

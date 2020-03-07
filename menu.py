@@ -3,6 +3,7 @@ import render as re
 from controls import key_input
 import constants as cx
 import drawval
+import map as mp
 
 def menu_print(menu_console):
 

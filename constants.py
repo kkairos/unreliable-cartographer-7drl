@@ -98,10 +98,10 @@ FONT_FILE = [
 	]
 
 TRAPS = {
-	0 : {"name" : "Pit Trap"},
-	1 : {"name" : "Slip'n'Slide Trap"},
-	2 : {"name" : "Fling Back Trap"},
-	3 : {"name" : "Oh Dear! Trap"}
+	0 : {"name" : "Just the Pits"},
+	1 : {"name" : "Slip'n'Slide"},
+	2 : {"name" : "Fling Back"},
+	3 : {"name" : "Oh No!"}
 	}
 
 TERRAIN = {

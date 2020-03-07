@@ -8,7 +8,7 @@ from random import randint
 def draw_all(map,map_console,entities,fov):
 	for y in constants.DrawOrder:
 		for x in entities:
-			if fov[x.x][x.y] == True:
+			if fov[x.x][x.y] >0:
 				if x.draw_order == y:
 					draw_e(map_console,fov,x,True)
 			elif (map.t_[x.x][x.y].explored == True and (x.draw_order == constants.DrawOrder.FLOOR)):
@@ -151,6 +151,37 @@ def console_borders(z,x0,y0,x1,y1):
 	z.put_char(x0, y1, drawval.LINES["bottom-left"], tcod.BKGND_DEFAULT)
 	z.put_char(x1, y1, drawval.LINES["bottom-right"], tcod.BKGND_DEFAULT)
 	return
+
+def legend_print(console,chars,x,y):
+	
+	console.print(x,y,"Trap Legend",drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+	
+	y+=2
+	
+	for z in range(0,4):
+
+		z2 = z*2
+		console.put_char(x+0,y+z2, ord("*"),tcod.BKGND_DEFAULT)
+		console.put_char(x+1,y+z2, chars[z],tcod.BKGND_DEFAULT)
+		console.put_char(x+2,y+z2, ord("*"),tcod.BKGND_DEFAULT)
+		console.fg[x][y+z2] = drawval.COLORS["map-red"]
+		console.fg[x+1][y+z2] = drawval.COLORS["map-red"]
+		console.fg[x+2][y+z2] = drawval.COLORS["map-red"]
+		console.print(x+4,y+z2,constants.TRAPS[z]["name"],drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+	
+	console.print(x,y+8,"Other",drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+	
+	console.put_char(x+0,y+10, ord("*"),tcod.BKGND_DEFAULT)
+	console.put_char(x+1,y+10, drawval.CHARS["gold"]+64,tcod.BKGND_DEFAULT)
+	console.put_char(x+2,y+10, ord("*"),tcod.BKGND_DEFAULT)
+	console.fg[x][y+10] = drawval.COLORS["map-red"]
+	console.fg[x+1][y+10] = drawval.COLORS["map-red"]
+	console.fg[x+2][y+10] = drawval.COLORS["map-red"]
+	console.print(x+4,y+10,"Gold!",drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+
+def status_con(console,x,y,player):
+	console.print(x,y,"Gold: " + str(player.gold),drawval.COLORS["gold-fg"],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+	console.print(x,y+1,"Floor: " + str(player.floor_number),drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
 
 def messageprint(z,s,m):
 	z.clear(32,drawval.COLORS[15],drawval.COLORS[0])

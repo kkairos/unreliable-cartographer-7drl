@@ -5,6 +5,7 @@ import tcod.event
 import random
 import drawval
 import map as mp
+from random import randint
 from time import sleep
 
 class Entity:
@@ -48,6 +49,7 @@ class Entity:
 					return True
 			elif map.t_[self.x+dx][self.y+dy].block_m:
 				if (returnval and map.t_[self.x+dx][self.y+dy].type != "pit") or not returnval:
+					#if self == entities[0]:
 					message = "A " + map.t_[self.x+dx][self.y+dy].type + " blocks your way."
 					re.messageprint(message_console,message,messages)
 					if returnval:
@@ -88,13 +90,24 @@ class Entity:
 		trap_entity = trap_at(entities,self.x,self.y)
 		if (trap_entity is not None):
 			if trap_entity.trapstate == 0:
-				trap_entity.trapstate = 1
-				message = re.construct_message(self,trap_entity," trigger a "," triggers a ")
-				re.messageprint(message_console,message,messages)
+				if trap_entity.dispname not in ["gold"]:
+					trap_entity.trapstate = 1
+					message = re.construct_message(self,trap_entity," trigger the "," triggers the ","",0,unit="",s_end=" trap!",shortmsg=False)
+					re.messageprint(message_console,message,messages)
+				else:
+					if trap_entity.dispname == "gold":
+						trap_entity.trapstate = 1
+						grand = randint(8,32)
+						message ="You collect " + str(grand) + " gold!"
+						if grand % 7 == 2:
+							message = "You trigger the Gold trap! (Just kidding! " + message + ")"
+						re.messageprint(message_console,message,messages)
+						entities[0].gold += grand
+						entities[0].gold += grand
 	
 	def do_trap(self,map,paper_map,main_console,map_console,fov,message_console,messages,entities):
 		trap_type = self.traptype
-		if trap_type in (0,2,3):
+		if trap_type == 0:
 			radius = 2
 			for z in drawval.CHARS["floor_give"]:
 				lc=0
@@ -132,6 +145,13 @@ class Entity:
 			map.walls_and_pits()
 		
 		elif trap_type == 1:
+			fov = entities[0].fov(map,entities)
+			re.draw_map(map, paper_map, map_console, fov)
+			re.draw_all(map,map_console,entities,fov)
+			re.draw_con(main_console,map_console,main_console.width-map_console.width,0)
+			re.draw_con(main_console,message_console,main_console.width-map_console.width,main_console.height-message_console.height)
+			tcod.console_flush()
+			re.clear_all(map,map_console,entities)
 			sleep(0.080)
 			trapeffect_blocked = False
 			while trapeffect_blocked == False:
@@ -145,7 +165,78 @@ class Entity:
 				re.clear_all(map,map_console,entities)
 				sleep(0.0075)
 
+		elif trap_type == 2:
+			fov = entities[0].fov(map,entities)
+			re.draw_map(map, paper_map, map_console, fov)
+			re.draw_all(map,map_console,entities,fov)
+			re.draw_con(main_console,map_console,main_console.width-map_console.width,0)
+			re.draw_con(main_console,message_console,main_console.width-map_console.width,main_console.height-message_console.height)
+			tcod.console_flush()
+			re.clear_all(map,map_console,entities)
+			sleep(0.080)
+			entities[0].lastx = entities[0].lastx*-1
+			entities[0].lasty = entities[0].lasty*-1
+			trapeffect_blocked = False
+			while trapeffect_blocked == False:
+				trapeffect_blocked = entities[0].move(entities[0].lastx,entities[0].lasty,map,entities,map_console,message_console,messages,True)
+				fov = entities[0].fov(map,entities)
+				re.draw_map(map, paper_map, map_console, fov)
+				re.draw_all(map,map_console,entities,fov)
+				re.draw_con(main_console,map_console,main_console.width-map_console.width,0)
+				re.draw_con(main_console,message_console,main_console.width-map_console.width,main_console.height-message_console.height)
+				tcod.console_flush()
+				re.clear_all(map,map_console,entities)
+				sleep(0.0075)
+		
+		elif trap_type == 3:
+
+			px = self.x*-1
+			py = self.y*-1
+			print(str(px)+" "+str(py))
+			while map.t_[self.x+px][self.y+py].type != "floor":
+				randz = randint(0,4)
+				if randz == 0:
+					px=1
+					py=0
+				elif randz ==1:
+					px=-1
+					py=0
+				elif randz ==2:
+					px=0
+					py=-1
+				elif randz ==3:
+					px=0
+					py=1
+			
+			boulder = Entity(
+				self.x+px,self.y+py,
+				char_input = drawval.CHARS["boulder"],
+				fg = "boulder-fg",
+				bg = cx.TERRAIN["floor"]["bg"],
+				hp = 100,speed = 100,
+				faction = cx.Faction.Enemy,
+				draw_order = cx.DrawOrder.NPC,
+				block_m = True,
+				dispname = "Boulder")
+			boulder.persistent_x = px*-1
+			boulder.persistent_y = py*-1
+			entities.append(boulder)
+			boulder.block_j = True
+			boulder.block_s = True
+			boulder.stats.at = 100
+			fov = entities[0].fov(map,entities)
+			re.draw_map(map, paper_map, map_console, fov)
+			re.draw_all(map,map_console,entities,fov)
+			re.draw_con(main_console,map_console,main_console.width-map_console.width,0)
+			re.draw_con(main_console,message_console,main_console.width-map_console.width,main_console.height-message_console.height)
+			tcod.console_flush()
+			re.clear_all(map,map_console,entities)
+			sleep(0.080)
+			print(str(boulder.persistent_x)+","+str(boulder.persistent_y))
+
 		self.trapstate = -1
+		for event in tcod.event.wait(0.5):
+			return
 
 	def talk(self,other,message_console,messages):
 
@@ -181,7 +272,7 @@ class Entity:
 		radius = self.sightrange
 		
 		for en in entities:
-			if (en.block_s == True) and (e != self):
+			if (en.block_s == True) and (en != self):
 				eblock[en.x][en.y] = True
 
 		for theta in range(len(cx.THETAS)):
