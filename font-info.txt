@@ -1,3 +1,0 @@
-Fonts are incomplete. Two have been temporarily commented out in code until they can be properly finished and uploaded (in one case, want fontmaker's permission and approval of public-facing version.)
-
-Perhaps obviously the other one is a standard codepage 437 and I in no way made it. Feel free to adopt the narrow one if it suits your fancy, though.
