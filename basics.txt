@@ -4,7 +4,7 @@ By KKairos and ElectroManiacal, (c) 2020 to extent permitted by law
 
 A game about navigating a trap-laden dungeon with an unreliable map.
 
-7DRL 2020.
+7DRL 2020. Playable with python3 and libtcod. (run main.py)
 
 I think we're mostly happy with how this game came out, I think. It's not the fairest roguelike ever made, but I (Dan / KKairos) really think the central mechanic is workable enough.
 
