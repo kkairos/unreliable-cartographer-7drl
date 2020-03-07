@@ -2,7 +2,7 @@
 
 2020 Seven-Day Roguelike
 
-See basics.txt for a very basic rundown and tips.
+See basics.txt for a very basic rundown and one big tip. (We recommend playing a couple of times before reading the big tip.)
 
 Playable with python3 and libtcod.
 
