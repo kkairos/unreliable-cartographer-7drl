@@ -1,4 +1,4 @@
-Tiles by KKairos and electromaniacal (mostly electromaniacal).
+Tiles by KKairos and ElectroManiacal (mostly ElectroManiacal).
 
 To extent permissible by law, the font and tileset contained in uc-tiles-16x16.png are hereby released into the public domain under CC license 0:
 
