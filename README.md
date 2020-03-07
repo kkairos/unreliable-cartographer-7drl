@@ -6,7 +6,7 @@ See basics.txt for a very basic rundown and one big tip. (We recommend playing a
 
 Playable with python3 and libtcod.
 
-(c) KKairos and electromaniacal, 2020 to extent permissible by law. But if you want to use it, you can!
+(c) KKairos and ElectroManiacal, 2020 to extent permissible by law. But if you want to use it, you can!
 
 See license.txt for our 3-Clause BSD License.
 
