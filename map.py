@@ -141,7 +141,7 @@ def rand_square(x0,x1,y0,y1,w0,w1,h0,h1):
 	
 	return rand_s_x, rand_s_y, rand_s_w, rand_s_h
 	
-def make_map(map,entities,G_TRAP_CHARS):
+def make_map(map,entities,G_TRAP_CHARS,player_floor):
 	x0,x1 = 5, 5
 	y0,y1 = 7, 7
 	w0,w1 = 5, 7
@@ -193,7 +193,7 @@ def make_map(map,entities,G_TRAP_CHARS):
 			if zzrand == 4:
 				map.draw_square(x+1,y+1,3,3,"pit","pit")
 			if zzrand == 5:
-				map.draw_square(x+1,y+1,3,3,"wall","floor")
+				map.draw_square(x+1,y+1,3,3,"wall","wall")
 			if zzrand == 6:
 				for c in range(0,8):
 					zrand2 = randint(1,4)
@@ -219,7 +219,7 @@ def make_map(map,entities,G_TRAP_CHARS):
 						map.t_[zdoub[0]][zdoub[1]] = newtile(constants.TERRAIN["wall"])
 
 	trapxys = []
-	for z in range(0,24):
+	for z in range(0,(24+player_floor*8)):
 		trap_type = z%4
 		yrand = randint(2,map.height-3)
 		xrand = randint(2,map.width-3)
@@ -258,7 +258,7 @@ def make_map(map,entities,G_TRAP_CHARS):
 			trap_remotes(map,trap.x,trap.y,2)
 
 	tries = 0
-	for z in range(0,24):	
+	for z in range(0,(16+player_floor*16)):	
 		yrand = randint(2,map.height-3)
 		xrand = randint(2,map.width-3)
 		while (map.t_[xrand][yrand].type != "floor") or entity_at_xy(entities,xrand,yrand) == True:
@@ -278,6 +278,55 @@ def make_map(map,entities,G_TRAP_CHARS):
 			dispname = "gold")
 		gold.istrap = True
 		entities.append(gold)
+
+	trap_type = z%4
+	yrand = randint(2,map.height-3)
+	xrand = randint(2,map.width-3)
+	safedistval = 18
+	distval = 5
+	tries = 0
+	while (map.t_[xrand][yrand].type != "floor" or distval < safedistval):
+		yrand = randint(2,map.height-3)
+		xrand = randint(2,map.width-3)
+		distvals = []
+		tries+=1
+		xa,ya = entities[0].x,entities[0].y
+		distval = abs(yrand-ya)+abs(xrand-xa)
+		if tries > 100:
+			distval = 8
+	if player_floor < 3:
+		stairs = ec.Entity(
+			xrand,yrand,
+			char_input = drawval.CHARS["stairs"],
+			fg = "pit-fg",
+			bg = "pit-bg",
+			hp = 1,speed = 1,
+			faction = constants.Faction.Enemy,
+			draw_order = constants.DrawOrder.FLOOR,
+			block_m = False,
+			dispname = "stairs")
+		map.t_[xrand][yrand] = newtile(constants.TERRAIN["stairs"])
+		stairs.istrap = True
+		for entity in entities:
+			if entity.x == stairs.x and entity.y ==stairs.y:
+				entities.remove(entity)
+		entities.append(stairs)
+	else:
+		artifact = ec.Entity(
+			xrand,yrand,
+			char_input = drawval.CHARS["artifact"],
+			fg = "gold-fg",
+			bg = "tile-bg",
+			hp = 1,speed = 1,
+			faction = constants.Faction.Enemy,
+			draw_order = constants.DrawOrder.FLOOR,
+			block_m = False,
+			dispname = "artifact")
+		artifact.istrap = True
+		for entity in entities:
+			if entity.x == artifact.x and entity.y ==artifact.y:
+				entities.remove(entity)
+		entities.append(artifact)
 	
 	map.walls_and_pits()
 

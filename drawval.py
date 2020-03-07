@@ -37,6 +37,7 @@ COLORS = {
 	"map-white" : (160,152,142),
 	"map-black" : (65,65,65),
 	"map-red" : (160,45,45),
+	"map-green" : (25,100,25),
 	"black" : (0,0,0),
 	"gold-fg" : (245,150,86),
 	"boulder-fg" : (185,185,175),
@@ -81,7 +82,9 @@ CHARS  ={
 	"person" : 272,
 	"remote_trap" : 282,
 	"gold" : 283,
+	"stairs" : 296,
 	"person_fall" : [304,305,306,307,308],
 	"floor_give" : [352,353,354,355],
-	"boulder" : 337
+	"boulder" : 337,
+	"artifact" : 284
 	}

@@ -54,7 +54,7 @@ SETTINGS = [
 	}
 	]
 
-DESC = {
+"""DESC = {
 	"INPUT_SEL" : [
 	"\nMOVE:     REST: 5,. \n"\
 	"7 8 9     JUMP: F   \n"\
@@ -81,7 +81,34 @@ DESC = {
 	"16x16 \"Alpha\"        ",
 	],
 	"NO_SEL" : []
-}
+}"""
+
+INPUT_SEL = [
+	"MOVE:    REST: 5,. \n"\
+	"\n7 8 9    JUMP: F   \n"\
+	" \|/              \n"\
+	"4-@-6             \n"\
+	" /|\              \n"\
+	"1 2 3             ",
+	"MOVE:    REST: S,. \n"\
+	"\nQ W E    JUMP: F   \n"\
+	" \|/              \n"\
+	"A-@-D             \n"\
+	" /|\              \n"\
+	"Z X C             ",
+	"MOVE:    REST: .   \n"\
+	"\nY K U    JUMP: F   \n"\
+	" \|/              \n"\
+	"H-@-L             \n"\
+	" /|\              \n"\
+	"B J N             "
+	]
+	
+INPUT_SEL_NAME = [
+	"standard numpad",
+	"laptop alternate numpad",
+	"vi-keys"
+	]
 
 walldraw = []
 for x in range(0,16):
@@ -92,9 +119,7 @@ for x in range(0,8):
 	pitdraw.append(x+288)
 
 FONT_FILE = [
-	"uc-tiles-16x16-stable.png",
-	"uc-tiles-16x16-working.png",
-	"uc-tiles-16x16-alpha.png",
+	"uc-tiles-16x16.png",
 	]
 
 TRAPS = {
@@ -132,6 +157,16 @@ TERRAIN = {
 		"char" : 273,
 		"fg" : "floor-fg",
 		"bg" : "floor-bg",
+		"type" : "floor",
+		"falloff-exp" : float(2.0)
+		},
+	"stairs" : {
+		"block_m" : False,
+		"block_j" : False,
+		"block_s" : False,
+		"char" : 273,
+		"fg" : "pit-fg",
+		"bg" : "pit-bg",
 		"type" : "floor",
 		"falloff-exp" : float(2.0)
 		},

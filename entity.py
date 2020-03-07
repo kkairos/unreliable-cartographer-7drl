@@ -49,9 +49,19 @@ class Entity:
 					return True
 			elif map.t_[self.x+dx][self.y+dy].block_m:
 				if (returnval and map.t_[self.x+dx][self.y+dy].type != "pit") or not returnval:
-					#if self == entities[0]:
-					message = "A " + map.t_[self.x+dx][self.y+dy].type + " blocks your way."
-					re.messageprint(message_console,message,messages)
+					if self.dispname == "Boulder" and map.t_[self.x+dx][self.y+dy].type == "pit":
+						self.x+=dx
+						self.y+=dy
+						self.stats.hp == 0
+						self.char == ord(" ")
+						map.t_[self.x][self.y] = mp.newtile(cx.TERRAIN["floor"])
+						map.walls_and_pits()
+						entities.remove(self)
+						re.messageprint(message_console,"The boulder filled in a pit!",messages)
+					else:
+						if self.dispname != "Boulder":
+							message = "A " + map.t_[self.x+dx][self.y+dy].type + " blocks your way."
+							re.messageprint(message_console,message,messages)
 					if returnval:
 						return True
 				else:
@@ -68,32 +78,27 @@ class Entity:
 
 	def jump(self,dx,dy,map,entities,map_console,message_console,messages):
 		if (self.x+dx > -1 and self.x+dx < map.width and self.y+dy > -1 and self.y+dy < map.height):
-			print(str(self.x+dx)+","+str(self.y+dy))
+			target_entity = blocking_entity(entities,self.x+dx,self.y+dy)
 			if map.t_[self.x+dx][self.y+dy].block_j:
+				re.messageprint(message_console,"*THUD*",messages)
+				return False
+			if target_entity is not None and target_entity.block_j:
 				re.messageprint(message_console,"*THUD*",messages)
 				return False
 			else:
 				self.x+=dx
 				self.y+=dy
 				return True
-				
-			#entity blocking code. not that useful here. yet
 			
-			#target_entity = blocking_entity(entities,self.x+dx,self.y+dy)
-			#if target_entity is not None:
-			#	if target_entity.faction == self.faction:
-			#		self.talk(target_entity,message_console,messages)
-			#	elif target_entity.faction != self.faction:
-			#		self.attack(target_entity,message_console,messages)
-			
-	def istrapped(self,map,entities,map_console,message_console,messages):
+	def istrapped(self,map,entities,map_console,message_console,messages,player_gold):
 		trap_entity = trap_at(entities,self.x,self.y)
 		if (trap_entity is not None):
 			if trap_entity.trapstate == 0:
-				if trap_entity.dispname not in ["gold"]:
+				if trap_entity.dispname not in ["gold","stairs","artifact"]:
 					trap_entity.trapstate = 1
 					message = re.construct_message(self,trap_entity," trigger the "," triggers the ","",0,unit="",s_end=" trap!",shortmsg=False)
 					re.messageprint(message_console,message,messages)
+
 				else:
 					if trap_entity.dispname == "gold":
 						trap_entity.trapstate = 1
@@ -102,8 +107,18 @@ class Entity:
 						if grand % 7 == 2:
 							message = "You trigger the Gold trap! (Just kidding! " + message + ")"
 						re.messageprint(message_console,message,messages)
-						entities[0].gold += grand
-						entities[0].gold += grand
+						player_gold += grand
+					elif trap_entity.dispname == "stairs":
+						trap_entity.trapstate = 1
+						message = "You go down the stairs!"
+						re.messageprint(message_console,message,messages)
+					elif trap_entity.dispname == "artifact":
+						trap_entity.trapstate = 1
+						message = "You got the artifact! +2500 gold! You have won the game!"
+						player_gold += 2500
+						re.messageprint(message_console,message,messages)
+
+		return player_gold
 	
 	def do_trap(self,map,paper_map,main_console,map_console,fov,message_console,messages,entities):
 		trap_type = self.traptype
@@ -192,7 +207,6 @@ class Entity:
 
 			px = self.x*-1
 			py = self.y*-1
-			print(str(px)+" "+str(py))
 			while map.t_[self.x+px][self.y+py].type != "floor":
 				randz = randint(0,4)
 				if randz == 0:
@@ -224,6 +238,7 @@ class Entity:
 			boulder.block_j = True
 			boulder.block_s = True
 			boulder.stats.at = 100
+			boulder.stats.df = 3
 			fov = entities[0].fov(map,entities)
 			re.draw_map(map, paper_map, map_console, fov)
 			re.draw_all(map,map_console,entities,fov)
@@ -232,7 +247,6 @@ class Entity:
 			tcod.console_flush()
 			re.clear_all(map,map_console,entities)
 			sleep(0.080)
-			print(str(boulder.persistent_x)+","+str(boulder.persistent_y))
 
 		self.trapstate = -1
 		for event in tcod.event.wait(0.5):
@@ -245,7 +259,7 @@ class Entity:
 		if message != "":
 			re.messageprint(message_console,message,messages)
 		
-	def attack(self,other,message_console,messages):
+	def attack(self,other,message_console,messages,dx=0,dy=0):
 	
 		damage = self.stats.at - other.stats.df
 		message = re.construct_message(self,other," attack ", " attacks "," for ",damage," HP")
@@ -255,6 +269,9 @@ class Entity:
 			other.block_m = False
 			other.char = ord("%")
 			other.draw_order = cx.DrawOrder.FLOOR
+			self.x+=dx
+			self.y+=dy
+
 		if message != "":
 			re.messageprint(message_console,message,messages)
 	

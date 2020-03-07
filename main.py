@@ -9,9 +9,9 @@ import menu
 from time import sleep
 from random import randint, shuffle
 
-def new_level(map_w,map_h,entities,G_TRAP_CHARS,G_GLYPH_CHARS):
+def new_level(map_w,map_h,entities,G_TRAP_CHARS,G_GLYPH_CHARS,player_floor=1):
 	level_map = map.Map(map_w,map_h)
-	map.make_map(level_map,entities,G_TRAP_CHARS)
+	map.make_map(level_map,entities,G_TRAP_CHARS,player_floor)
 	paper_map = map.Map(map_w,map_h)
 	for y in range(map_h):
 		for x in range(map_w):
@@ -37,14 +37,26 @@ def new_level(map_w,map_h,entities,G_TRAP_CHARS,G_GLYPH_CHARS):
 				paper_map.t_[x][y].fg = drawval.COLORS["map-white"]
 				paper_map.t_[x][y].bg = drawval.COLORS["map-white"]
 			for entity in entities:
+				RAND_CHARS = [drawval.CHARS["gold"]]
+				RAND_CHARS.extend(G_GLYPH_CHARS)
 				if ((entity.x == x) and (entity.y == y) and entity.istrap):
-					if entity.dispname != "gold" and entity.dispname != "boulder":
+					if entity.dispname not in ("gold","Boulder","stairs","artifact"):
 						paper_map.t_[x][y].char = G_GLYPH_CHARS[entity.traptype]
 						paper_map.t_[x][y].fg = drawval.COLORS["map-red"]
 						paper_map.t_[x][y].type = "trap"
 					elif entity.dispname == "gold":
 						paper_map.t_[x][y].char = drawval.CHARS["gold"]
 						paper_map.t_[x][y].fg = drawval.COLORS["map-red"]
+					elif entity.dispname == "stairs":
+						paper_map.t_[x][y].char = drawval.CHARS["stairs"]
+						paper_map.t_[x][y].fg = drawval.COLORS["map-green"]
+					elif entity.dispname == "artifact":
+						paper_map.t_[x][y].char = drawval.CHARS["artifact"]
+						paper_map.t_[x][y].fg = drawval.COLORS["map-green"]
+					if player_floor > 1:
+						if entity.dispname not in ("stairs","artifact"):
+							zrand = randint(0,len(RAND_CHARS)-1)
+							paper_map.t_[x][y].char = RAND_CHARS[zrand]
 	
 	return level_map, paper_map
 
@@ -55,10 +67,12 @@ def draw_loop(player, level_map, paper_map, map_console, main_console, message_c
 	re.draw_con(main_console,map_console,main_console.width-map_console.width,0)
 	re.draw_con(main_console,status_console,0,0)
 	re.draw_con(main_console,message_console,status_console.width,main_console.height-message_console.height)
-	if player_state == 1:
-		re.status_con(status_console,1,status_console.height-3,entities[0])
 	tcod.console_flush()
 	re.clear_all(level_map,map_console,entities)
+	
+def status_con(console,x,y,player_floor,player_gold):
+	console.print(x,y,"Gold:  " + str(player_gold),drawval.COLORS["gold-fg"],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+	console.print(x,y+1,"Floor: " + str(player_floor),drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
 
 def main():
 
@@ -84,8 +98,8 @@ def main():
 
 	player_state = 1	#player is alive
 	
-	player.gold = 0
-	player.floor_number = 1
+	player_gold = 0
+	player_floor = 1
 
 	# get and shuffle trap chars. 4 for floor tiles, and 4 for map glyphs
 	
@@ -110,7 +124,7 @@ def main():
 	main_console = tcod.console_init_root(screen_width, screen_height, "D@N ROGUE", False, 3, "F", True)
 	
 	map_console = tcod.console.Console(map_console_w, map_console_h, "F", None)
-	menu_console = tcod.console.Console(30, 19, "F", None)
+	#menu_console = tcod.console.Console(30, 19, "F", None)
 	
 	message_console = tcod.console.Console(map_console.width,main_console.height-map_console.height)
 	
@@ -123,12 +137,12 @@ def main():
 	for x in range(0,message_console.height):
 		messages.append("")
 	
-	welcome_message = "Welcome to *The Unreliable Cartographer.* This is a game about exploring a dungeon with a map of increasingly dubious accuracy and dodging traps along the way. Press [ENTER] to see controls. We hope you like it!"
+	welcome_message = "Welcome to *The Unreliable Cartographer.* This is a game about exploring ancient ruins to find an ancient artifact with a map of increasingly dubious accuracy and dodging traps along the way. Controls are on the left panel. We hope you like it!"
 	re.messageprint(message_console, welcome_message, messages )
 	
 	#menu.menu_print(menu_console)
 	
-	re.console_borders(menu_console,0,0,menu_console.width-1,menu_console.height-1)
+	#re.console_borders(menu_console,0,0,menu_console.width-1,menu_console.height-1)
 	
 	fg_sh = 15
 	bg_sh = 0
@@ -138,12 +152,17 @@ def main():
 	#re.console_borders(map_console,0,0,map_console.width-1,map_console.height-1)
 	
 	jump_trigger = False
+	no_enemies = False
+	quit_trigger = False
+	new_floor = False
 	
+	fov = player.fov(level_map,entities)
 	re.draw_paper_map(paper_map, map_console)
 	
 	while True:
 	
 		draw_loop(player, level_map, paper_map, map_console, main_console, message_console,status_console,entities,player_state)
+		status_con(status_console,2,status_console.height-2,player_floor,player_gold)
 		for event in tcod.event.wait():
 			if event.type == "KEYDOWN":
 				action = key_input(event.sym)
@@ -153,6 +172,7 @@ def main():
 				exit = action.get('exit')
 				pause = action.get('pause')
 				jump = action.get('jump')
+				controlchange = action.get('controlchange')
 				if player_state == 1:
 					if move:
 						dx,dy = move
@@ -168,22 +188,35 @@ def main():
 							jump_trigger = False
 						player.lastx = dx
 						player.lasty = dy
+						quit_trigger = False
 					if jump:
 						if not jump_trigger:
 							re.messageprint(message_console, "Press [DIR] to jump 2 squares away in a direction, any other key to cancel.", messages )
 							jump_trigger = True
+							no_enemies = True
 						elif jump_trigger:		
 							re.messageprint(message_console, "Jump cancelled.", messages )
 							jump_trigger = False
-					player.istrapped(level_map,entities,map_console,message_console,messages)
-					for entity in entities:
-						if entity.dispname == "Boulder":
-							entity.move(entity.persistent_x,entity.persistent_y,level_map,entities,map_console,message_console,messages)
-					for entity in entities:
-						if entity.istrap and entity.trapstate > 0:
-							entity.do_trap(level_map,paper_map,main_console,map_console,fov,message_console,messages,entities)
-							if entity.dispname == "gold":
-								entities.remove(entity)
+							no_enemies = True
+						quit_trigger = False
+					player_gold = player.istrapped(level_map,entities,map_console,message_console,messages,player_gold)
+					print(player_gold)
+					if not no_enemies:
+						for entity in entities:
+							if entity.dispname == "Boulder":
+								entity.move(entity.persistent_x,entity.persistent_y,level_map,entities,map_console,message_console,messages)
+						for entity in entities:
+							if entity.istrap and entity.trapstate > 0:
+								entity.do_trap(level_map,paper_map,main_console,map_console,fov,message_console,messages,entities)
+								if entity.dispname == "gold":
+									entities.remove(entity)
+								if entity.dispname == "stairs":
+									new_floor = True
+								if entity.dispname == "artifact":
+									player_state = 0
+					elif no_enemies:
+						no_enemies = False
+
 					if level_map.t_[player.x][player.y].type == "pit":
 						fov = player.fov(level_map,entities)
 						for z in drawval.CHARS["person_fall"]:
@@ -192,15 +225,53 @@ def main():
 						player_state = 0
 						entities.remove(player)
 						re.messageprint(message_console,"Oh, dear! You've fallen down a pit!",messages)
+
 					if player.stats.hp < 1:
 						player_state = 0
+					status_con(status_console,2,status_console.height-2,player_floor,player_gold)
 				if exit:
-					return True
-				if pause:
-					menu.menu(main_console,menu_console)
+					if quit_trigger == False:
+						re.messageprint(message_console, "Quit? [ESC] for 'Yes' or anything else for 'no'.", messages )
+						no_enemies = True
+						quit_trigger = True
+					elif quit_trigger:
+						return True
+				if controlchange:
+					no_enemies = True
+					cx.SETTINGS[0]["sel"] = (cx.SETTINGS[0]["sel"] + 1)% 3
+					re.legend_print(status_console,G_GLYPH_CHARS,1,4)
+					quit_trigger = False
+					re.messageprint(message_console, "Changed controls to " + cx.INPUT_SEL_NAME[cx.SETTINGS[0]["sel"]] + ".", messages )
+
+				#if pause:
+				#	no_enemies = True
+				#	menu.menu(main_console,menu_console)
 				
 			elif event.type == "WINDOWCLOSE":
 				return True
+			
+		if new_floor:
+			
+			temp_player = entities.pop
+
+			entities.clear()
+			level_map.t_.clear()
+			paper_map.t_.clear()
+		
+			player = ec.Entity(4,2,drawval.CHARS["person"],15,0,10,10,cx.Faction.Ally,cx.DrawOrder.PLAYER,True,"You")
+			
+			entities = [player]
+			
+			player_floor += 1
+			player.x = 4
+			player.y = 2
+			
+			map_console.clear()
+			level_map, paper_map = new_level(map_w,map_h,entities,G_TRAP_CHARS,G_GLYPH_CHARS,player_floor)
+			new_floor = False
+			re.draw_paper_map(paper_map, map_console)
+			fov = player.fov(level_map,entities)
+			status_con(status_console,2,status_console.height-2,player_floor,player_gold)
 
 if __name__ == "__main__":
 	main()

@@ -179,9 +179,11 @@ def legend_print(console,chars,x,y):
 	console.fg[x+2][y+10] = drawval.COLORS["map-red"]
 	console.print(x+4,y+10,"Gold!",drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
 
-def status_con(console,x,y,player):
-	console.print(x,y,"Gold: " + str(player.gold),drawval.COLORS["gold-fg"],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
-	console.print(x,y+1,"Floor: " + str(player.floor_number),drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+	i_to_display = constants.SETTINGS[0]["sel"]
+
+	console.print(x,y+12,"Controls\n(TAB changes)",drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
+	
+	console.print(x,y+15,constants.INPUT_SEL[i_to_display],drawval.COLORS[15],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
 
 def messageprint(z,s,m):
 	z.clear(32,drawval.COLORS[15],drawval.COLORS[0])
@@ -189,7 +191,6 @@ def messageprint(z,s,m):
 	if len(s) > z.width:
 
 		mms = []
-		print(str(len(s)) + " " + str(z.width))
 		while ((s.rfind(" ",0,(z.width-1)) != -1) and (len(s) > z.width)):
 			dex = s.rfind(" ",0,(z.width+1))
 			mms.append(s[0:(dex)])
@@ -198,7 +199,6 @@ def messageprint(z,s,m):
 		
 		for ms in mms:
 			m.append(ms)
-			print(ms)
 	else:
 		m.append(s)
 	for x in range(0,z.height):

@@ -16,6 +16,7 @@ def menu_print(menu_console):
 			menu_console.print(4,x.get("yval")+1,y[x.get("sel")],drawval.COLORS[7],drawval.COLORS[0],tcod.BKGND_DEFAULT,tcod.LEFT)
 	return
 
+"""
 def menu(target_console,menu_console):
 
 	menu_selection = 0
@@ -60,3 +61,4 @@ def menu(target_console,menu_console):
 								target_console.bg[x_store][y_store] = temp_console[x_store][y_store][2]
 				if exit or pause:
 					return
+					"""

@@ -1,0 +1,7 @@
+Tiles by KKairos and electromaniacal (mostly electromaniacal).
+
+To extent permissible by law, the font and tileset contained in uc-tiles-16x16.png are hereby released into the public domain under CC license 0:
+
+https://creativecommons.org/publicdomain/zero/1.0/
+
+If these tiles are used, attribution is appreciated but not required, but should not be given in a way implying our endorsement of product. Feel free to reach out and let us know if you find the tiles useful, though!
